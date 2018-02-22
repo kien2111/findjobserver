@@ -1,0 +1,4 @@
+require('dotenv/config')
+require('./../db/dbconnect')
+require('../server.js')
+require('./../provider/userProvider')
