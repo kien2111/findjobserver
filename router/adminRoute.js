@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var usercontroller = require('../controller/userController');
-router.use((next,req,resp)=>{
+var adminController = require('../controller/adminController');
+router.use((req,res,next)=>{
     next();
 });
+router.get('/fetchuser',adminController.getAllUser);
+module.exports = router;
