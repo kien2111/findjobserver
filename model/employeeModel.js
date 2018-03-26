@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var AppointmentModel = require('./appointmentModel').AppointmentModel;
 var AccountModel = require('../model/accountModel').AccountModel;
 var TransactionModel = require('./transactionModel').TransactionModel;
@@ -7,6 +7,7 @@ var RateModel = require('./rateModel').RateModel;
 var Emp_LocationModel = require('./emp_locationModel').Emp_LocationModel;
 var EmployeeModel = bookshelf.Model.extend({
     tableName:"employees",
+    idAttribute:"idemployee",
     allAccounts:function(){
         return this.hasMany(AccountModel,'employee_id','idemployee');
     },
@@ -17,7 +18,7 @@ var EmployeeModel = bookshelf.Model.extend({
         return this.hasMany(TransactionModel,'employee_id','idemployee');
     },
     profile:function(){
-        return this.belongsTo(ProfileModel,'idprofile','idemployee');
+        return this.hasOne(ProfileModel,'idprofile','idemployee');
     },
     emp_location:function(){
         return this.belongsTo(Emp_LocationModel,'employee_id','idemployee');

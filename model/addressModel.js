@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var StreetModel = require('./streetModel').StreetModel;
 var Province_CityModel = require('./province_cityModel').Province_CityModel;
 var DistrictModel = require('./districtModel').DistrictModel;
@@ -6,6 +6,7 @@ var Emp_LocationModel = require('./emp_locationModel').Emp_LocationModel;
 var WardModel = require('./wardModel').WardModel;
 var AddressModel = bookshelf.Model.extend({
     tableName:"addresses",
+    idAttribute:"idaddress",
     street:function(){
         return this.belongsTo(StreetModel,'street_id','idstreet');
     },

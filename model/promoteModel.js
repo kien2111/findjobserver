@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var Promote_EventModel = require('./promote_eventModel').Promote_EventModel;
 var PromoteModel = bookshelf.Model.extend({
     tableName:"promotes",

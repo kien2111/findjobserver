@@ -1,9 +1,11 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var EmployeeModel = require('./employeeModel').EmployeeModel;
 var EmployerModel = require('./employerModel').EmployerModel;
 var AddressModel = require('./addressModel').AddressModel;
+var UserModel = require('./userModel').UserModel;
 var Emp_LocationModel = bookshelf.Model.extend({
     tableName:"emp_location",
+    idAttribute:'address_id',
     employee:function(){
         return this.belongsTo(EmployeeModel,'idemployee','employee_id');
     },
@@ -12,6 +14,9 @@ var Emp_LocationModel = bookshelf.Model.extend({
     },
     address:function(){
         return this.belongsTo(AddressModel,'idaddress','address_id');
+    },
+    user:function(){
+        return this.belongsTo(UserModel,'iduser','iduser');
     }
 });
 var Emp_Locations = bookshelf.Collection.extend({

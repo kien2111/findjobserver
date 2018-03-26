@@ -1,5 +1,5 @@
 var Coin_ExchangeModel = require('./coin_exchangeModel');
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var CreditModel = bookshelf.Model.extend({
     tableName:"credits",
     coin_exchange:function(){

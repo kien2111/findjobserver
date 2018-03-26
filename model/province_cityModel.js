@@ -1,8 +1,9 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var AddressModel = require('./addressModel').AddressModel;
 var DistrictModel = require('./districtModel').DistrictModel;
 var Province_CityModel = bookshelf.Model.extend({
     tableName:"provinces_citys",
+    idAttribute:'idprovince_city',
     addresses:function(){
         return this.hasMany(AddressModel,'province_city_id','idprovince_city');
     },

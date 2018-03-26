@@ -11,5 +11,6 @@ var knex = require('knex')({
     acquireConnectionTimeout:10000,
 });
 var bookshelf = require('bookshelf')(knex);
-bookshelf.plugin('registry');
-module.exports = bookshelf;
+bookshelf.plugin(['registry','pagination']);
+module.exports.bookshelf = bookshelf;
+module.exports.knex = knex;

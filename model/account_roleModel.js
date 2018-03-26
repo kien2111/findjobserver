@@ -1,6 +1,6 @@
 var AccountModel = require('./accountModel').AccountModel;
 var RoleModel = require('./roleModel').RoleModel;
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var Account_RoleModel = bookshelf.Model.extend({
     tableName:"accounts_roles",
     account:function(){
