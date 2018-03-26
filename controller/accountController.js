@@ -10,6 +10,7 @@ var Profile = require('../model/profileModel');
 var uuidv4 = require('uuid/v4');
 var Promise = require('bluebird');
 var Balance = require('../model/balanceModel');
+var User = require('../model/userModel');
 var bookshelf = require('../db/dbconnect').bookshelf;
 exports.SignUp = function(req,res){
     var obj = req.body;
@@ -17,25 +18,33 @@ exports.SignUp = function(req,res){
     bcrypt.hash(obj.password,10).then(hashpassword=>{
         obj.id = uuidv4();
         obj.password=hashpassword;
-    
-        Promise.all([Account.AccountModel.forge(obj).save(null,{method:'insert'}),
-            Balance.BalanceModel.forge({idbalance:obj.id}).save(null,{method:'insert'}),
-            Account_Role.Account_RoleModel.forge({idaccount:obj.id,idrole:2,status:1}).save(null,{method:'insert'}),
-            Profile.ProfileModel.forge({idprofile:obj.id}).save(null,{method:'insert'})])
-        .then(arrayresult=>{
-            res.status(200).json({message:"Signup Success",data:null});
-        }).catch(err=>{
-            res.status(401).json({message:"SignUp Fail pls try again error : "+err.message,data:null});
+        Account.AccountModel.signup(obj).then(result=>{
+            res.status(200).json({message:"Signup OK",data:null});
+        })
+        .then(console.log)
+        .catch(err=>{
+            res.status(400).json({message:err.message,data:null});
         });
-       
-    }).catch(err=>{
+    })
+    .then(console.log)
+    .catch(err=>{
+        console.log(err);
         res.status(500).json({message:err.message,data:null});
     });
     
 }
 exports.Login = function(req,res){
     const {username,password,email} = req.body;
-    if(!username || !password){
+    Account.AccountModel.login(req.body).then(account=>{
+        res.status(200).json({message:"Login OK",
+        data:_.omit(account.toJSON(),(['id','password','created_date','updated_at','accounts_roles']))});
+    }).catch(Account.AccountModel.NotFoundError,()=>{
+        res.status(400).json({message:"Can't found user pls SignUp",data:null});
+    }).catch(err=>{
+        console.log(err);
+        res.status(400).json({message:err.message,data:null});
+    })
+    /* if(!username || !password){
         res.status(500).json({message:"username or password required",data:null});
     }else{
         Account.AccountModel.query({
@@ -69,8 +78,8 @@ exports.Login = function(req,res){
             res.status(400).json({message:`${username} not found`,data:null});
         })
         .catch(err=>{
-            res.status(400).json({message:err.message,data:null});
-        });
+            res.status(400).json({message:`error from database ${err.message}`,data:null});
+        }); */
         /* Account.AccountModel.where('username',username)
         .fetch({withRelated:['employer','employee.profile','accounts_roles.role']},{require:true})
         .then(function(model){
@@ -97,7 +106,6 @@ exports.Login = function(req,res){
             res.status(400).json({message:err.message,data:null});
         }); */
     }
-}
 exports.loginRequired=function(req,res,next){
     if(req.user){
         next();
