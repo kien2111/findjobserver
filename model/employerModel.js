@@ -3,7 +3,7 @@ var AccountModel = require('../model/accountModel').AccountModel;
 var TransactionModel = require('./transactionModel').TransactionModel;
 var Emp_LocationModel = require('./emp_locationModel').Emp_LocationModel;
 var RateModel = require('./rateModel').RateModel;
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var EmployerModel = bookshelf.Model.extend({
     tableName:"employers",
     allAccount:function(){

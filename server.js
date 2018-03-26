@@ -23,6 +23,7 @@ app.use(bodyparser.json());
 app.use(cookiParser);
 app.use('/Accounts',require('./router/accountRoute'));
 app.use('/Categories',require('./router/categoryRoute'));
+app.use('/Profiles',require('./router/profileRoute'));
 app.use(function(req,res,next){
     
     if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0]==='bearer'){

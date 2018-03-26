@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var CriteriaModel = require('./criteriaModel').CriteriaModel;
 var RateModel = require('./rateModel').RateModel;
 var Criteria_RateModel = bookshelf.Model.extend({

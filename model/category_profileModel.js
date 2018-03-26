@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect');
+var bookshelf = require('../db/dbconnect').bookshelf;
 var CategoryModel = require('./categoryModel').CategoryModel;
 var ProfileModel = require('./profileModel').ProfileModel;
 var Category_ProfileModel = bookshelf.Model.extend({
