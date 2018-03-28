@@ -10,7 +10,6 @@ var knex = require('knex')({
     pool:{min:0,max:10},
     acquireConnectionTimeout:10000,
 });
-var bookshelf = require('bookshelf')(knex);
-bookshelf.plugin(['registry','pagination']);
+var bookshelf = require('bookshelf')(knex).plugin(['registry','pagination','visibility']);
 module.exports.bookshelf = bookshelf;
 module.exports.knex = knex;

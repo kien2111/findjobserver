@@ -9,6 +9,25 @@ var User = require('../model/userModel');
 var TransactionModel = require('../model/transactionModel').TransactionModel;
 exports.getHighRateProfile = function(req,res){
     
+    Profile.ProfileModel.gethighrateprofile(req.query)
+    //.then(console.log)
+    .then(result=>{
+        let pagination = result.pagination;
+        res.status(200).json({message:"OK",data:{
+            query:req.query.idcategory,
+            totalcount:pagination.rowCount,
+            nextpage:req.query.page>=pagination.pageCount?-1:pagination.page+1,
+            profiles:result.toJSON().map(element=>{
+                const {user,account} = {user:element.user,account:element.user.account};
+                return Object.assign(_.omit(element,['user','account']),_.omit(user,['account']),account);
+            }),
+        }});
+    })
+    
+    .catch(console.log)
+    .catch(err=>{
+        res.status(400).json({message:err.message,data:null});
+    })
     
     /* knex.from('profiles').innerJoin('employees','profiles.idprofile','=','employees.idemployee')
     .select('*').then((model)=>{

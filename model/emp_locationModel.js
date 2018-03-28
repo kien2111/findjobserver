@@ -1,26 +1,26 @@
 var bookshelf = require('../db/dbconnect').bookshelf;
-var EmployeeModel = require('./employeeModel').EmployeeModel;
-var EmployerModel = require('./employerModel').EmployerModel;
-var AddressModel = require('./addressModel').AddressModel;
-var UserModel = require('./userModel').UserModel;
+require('./employeeModel').EmployeeModel;
+require('./employerModel').EmployerModel;
+require('./addressModel').AddressModel;
+require('./userModel').UserModel;
 var Emp_LocationModel = bookshelf.Model.extend({
     tableName:"emp_location",
     idAttribute:'address_id',
     employee:function(){
-        return this.belongsTo(EmployeeModel,'idemployee','employee_id');
+        return this.belongsTo('EmployeeModel','idemployee','employee_id');
     },
     employer:function(){
-        return this.belongsTo(EmployerModel,'idemployer','employer_id');
+        return this.belongsTo('EmployerModel','idemployer','employer_id');
     },
     address:function(){
-        return this.belongsTo(AddressModel,'idaddress','address_id');
+        return this.belongsTo('AddressModel','idaddress','address_id');
     },
     user:function(){
-        return this.belongsTo(UserModel,'iduser','iduser');
+        return this.belongsTo('UserModel','iduser','iduser');
     }
 });
 var Emp_Locations = bookshelf.Collection.extend({
     model:Emp_LocationModel,
 });
-module.exports.Emp_LocationModel = Emp_LocationModel;
-module.exports.Emp_LocationCollection = Emp_Locations;
+module.exports.Emp_LocationModel = bookshelf.model('Emp_LocationModel',Emp_LocationModel);
+module.exports.Emp_LocationCollection = bookshelf.collection('Emp_LocationCollection',Emp_Locations);

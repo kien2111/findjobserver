@@ -1,34 +1,34 @@
 var bookshelf = require('../db/dbconnect').bookshelf;
-var AppointmentModel = require('./appointmentModel').AppointmentModel;
-var AccountModel = require('../model/accountModel').AccountModel;
-var TransactionModel = require('./transactionModel').TransactionModel;
-var ProfileModel = require('./profileModel').ProfileModel;
-var RateModel = require('./rateModel').RateModel;
-var Emp_LocationModel = require('./emp_locationModel').Emp_LocationModel;
+require('./appointmentModel').AppointmentModel;
+require('../model/accountModel').AccountModel;
+require('./transactionModel').TransactionModel;
+require('./profileModel').ProfileModel;
+require('./rateModel').RateModel;
+require('./emp_locationModel').Emp_LocationModel;
 var EmployeeModel = bookshelf.Model.extend({
     tableName:"employees",
     idAttribute:"idemployee",
     allAccounts:function(){
-        return this.hasMany(AccountModel,'employee_id','idemployee');
+        return this.hasMany('AccountModel','employee_id','idemployee');
     },
     appointments:function(){
-        return this.hasMany(AppointmentModel,'employee_id','idemployee');
+        return this.hasMany('AppointmentModel','employee_id','idemployee');
     },
     transations:function(){
-        return this.hasMany(TransactionModel,'employee_id','idemployee');
+        return this.hasMany('TransactionModel','employee_id','idemployee');
     },
     profile:function(){
-        return this.hasOne(ProfileModel,'idprofile','idemployee');
+        return this.hasOne('ProfileModel','idprofile','idemployee');
     },
     emp_location:function(){
-        return this.belongsTo(Emp_LocationModel,'employee_id','idemployee');
+        return this.belongsTo('Emp_LocationModel','employee_id','idemployee');
     },
     rates:function(){
-        return this.hasMany(RateModel,'employee_id','idemployee');
+        return this.hasMany('RateModel','employee_id','idemployee');
     }
 });
 var Employees = bookshelf.Collection.extend({
     model:EmployeeModel,
 });
-module.exports.EmployeeModel = EmployeeModel;
-module.exports.EmployeeCollection = Employees;
+module.exports.EmployeeModel = bookshelf.model('EmployeeModel',EmployeeModel);
+module.exports.EmployeeCollection = bookshelf.collection('EmployeeCollection',Employees);

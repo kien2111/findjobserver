@@ -1,6 +1,6 @@
 var BalanceModel = require('./balanceModel').BalanceModel;
 var Account_RoleModel = require('./account_roleModel').Account_RoleModel;
-var EmployeeModel =  require('./employeeModel').EmployeeModel;
+var EmployeeModel = require('./employeeModel').EmployeeModel;
 var EmployerModel = require('./employerModel').EmployerModel;
 var NotificationModel = require('./notificationModel').NotificationModel;
 var FeedBackModel = require('./feedbackModel').FeedBackModel;
@@ -14,6 +14,7 @@ var AccountModel= bookshelf.Model.extend({
     tableName:"accounts",
     idAttrbute:"id",
     hasTimestamps:true,
+    hidden:['password','created_at','updated_at'],
     /* employee:function(){
         return this.belongsTo(EmployeeModel,'employee_id','idemployee');
     },
@@ -21,19 +22,19 @@ var AccountModel= bookshelf.Model.extend({
         return this.belongsTo(EmployerModel,'employer_id','idemployer');
     }, */
     feedbacks:function(){
-        return this.hasMany(FeedBackModel,'account_id','id');
+        return this.hasMany('FeedBackModel','account_id','id');
     },
     user:function(){
-        return this.hasOne(UserModel,'iduser','id');
+        return this.hasOne('UserModel','iduser','id');
     },
     accounts_roles:function(){
-        return this.hasMany(Account_RoleModel,'idaccount','id');
+        return this.hasMany('Account_RoleModel','idaccount','id');
     },
     balance:function(){
-        return this.hasOne(BalanceModel,'idbalance','id');
+        return this.hasOne('BalanceModel','idbalance','id');
     },
     notifications:function(){
-        return this.hasMany(NotificationModel,'account_id','id');
+        return this.hasMany('NotificationModel','account_id','id');
     },
 
     
@@ -79,10 +80,10 @@ var AccountModel= bookshelf.Model.extend({
         return bookshelf.transaction(trx=>{
             return this.forge(obj).save(null,{method:'insert',transacting:trx})
             .tap(account=>{
-                return Promise.all([UserModel.forge({iduser:obj.id}).save(null,{method:'insert',transacting:trx}),
-                BalanceModel.forge({idbalance:obj.id}).save(null,{method:'insert',transacting:trx}),
-                Account_RoleModel.forge({idaccount:obj.id}).save(null,{method:'insert',transacting:trx}),
-                ProfileModel.forge({idprofile:obj.id}).save(null,{method:'insert',transacting:trx})]);
+                return Promise.all([new UserModel({iduser:obj.id}).save(null,{method:'insert',transacting:trx}),
+                new BalanceModel({idbalance:obj.id}).save(null,{method:'insert',transacting:trx}),
+                new Account_RoleModel({idaccount:obj.id}).save(null,{method:'insert',transacting:trx}),
+                new ProfileModel({idprofile:obj.id}).save(null,{method:'insert',transacting:trx})]);
             });
         });
     }),
@@ -91,5 +92,5 @@ var AccountModel= bookshelf.Model.extend({
 var Accounts = bookshelf.Collection.extend({
     model:AccountModel,
 });
-module.exports.AccountModel = AccountModel;
-module.exports.AccountCollection =Accounts;
+module.exports.AccountModel = bookshelf.model('AccountModel',AccountModel);
+module.exports.AccountCollection =bookshelf.collection('AccountCollection',Accounts);
