@@ -1,10 +1,9 @@
-require('./accountModel').AccountModel;
-require('./roleModel').RoleModel;
-var bookshelf = require('../db/dbconnect').bookshelf;
+var {RoleModel} = require('./roleModel');
+var {bookshelf} = require('../db/dbconnect');
 var Account_RoleModel = bookshelf.Model.extend({
     tableName:"accounts_roles",
-    account:function(){
-        return this.belongsTo('AccountModel','id','idaccount');
+    user:function(){
+        return this.belongsTo('UserModel','iduser','iduser');
     },
     role:function(){
         return this.belongsTo('RoleModel','idrole','idrole');

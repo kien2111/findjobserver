@@ -1,32 +1,16 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
-require('./employeeModel').EmployeeModel;
-require('./field_profileModel').Field_ProfileModel;
-require('./category_profileModel').Category_ProfileModel;
-require('./request_update_profileModel').Request_Update_ProfileModel;
-require('./fieldModel').FieldModel;
+var {bookshelf} = require('../db/dbconnect');
+var {Request_Update_ProfileModel} = require('./request_update_profileModel');
 var Promise = require('bluebird');
-require('./userModel').UserModel;
-require('./categoryModel').CategoryModel;
+var {UserModel} = require('./userModel');
+var {CategoryModel} = require('./categoryModel');
 var ProfileModel = bookshelf.Model.extend({
     tableName:"profiles",
     idAttribute:"idprofile",
-    employee:function(){
-        return this.hasOne('EmployeeModel','idemployee','idprofile');
-    },
-    fields_profiles:function(){
-        return this.hasMany('Field_ProfileModel','profile_id','idprofile');
-    },
-    categories_profiles:function(){
-        return this.hasMany('Category_ProfileModel','idprofile','idprofile');
-    },
     user:function(){
         return this.hasOne('UserModel','iduser','idprofile');
     },
     request_update_profiles:function(){
         return this.hasMany('Request_Update_ProfileModel','profile_id','idprofile');
-    },
-    fields:function(){
-        return this.hasMany('FieldModel','idfield','idprofile');
     },
     category:function(){
         return this.hasOne('CategoryModel','idcategory','category');

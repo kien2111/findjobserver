@@ -1,11 +1,8 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
-var ProfileModel = require('./profileModel').ProfileModel;
+var {bookshelf} = require('../db/dbconnect');
+var {ProfileModel} = require('./profileModel');
 var Request_Update_ProfileModel = bookshelf.Model.extend({
     tableName:"request_update_profile",
     idAttribute:'idrequest_update_profile',
-    accounts_roles:function(){
-        return this.hasMany('Account_RoleModel','idrole','idrole');
-    },
     profile:function(){
         return this.hasOne('ProfileModel','idprofile','profile_id');
     }

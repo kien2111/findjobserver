@@ -1,5 +1,5 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
-require('./account_roleModel');
+var {bookshelf} = require('../db/dbconnect');
+var {Account_RoleModel} = require('./account_roleModel');
 var RoleModel = bookshelf.Model.extend({
     tableName:"roles",
     idAttribute:'idrole',

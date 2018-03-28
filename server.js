@@ -41,3 +41,7 @@ app.use(function(req,res,next){
         next();
     }
 });
+Object.prototype.JsonResponse = function(message,data=null){
+    this.message = message;
+    this.data = data;
+}

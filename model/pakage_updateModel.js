@@ -1,6 +1,6 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
-var UserModel = require('./userModel').UserModel;
-require('./request_update_profileModel').Request_Update_ProfileModel;
+var {bookshelf} = require('../db/dbconnect');
+var {UserModel} = require('./userModel');
+var {Request_Update_ProfileModel} = require('./request_update_profileModel');
 var Pakage_UpdateModel = bookshelf.Model.extend({
     tableName:"pakage_update",
     idAttribute:'idpakage_update',

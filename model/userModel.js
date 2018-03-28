@@ -1,8 +1,6 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
-var Emp_LocationModel = require('../model/emp_locationModel').Emp_LocationModel;
-var AccountModel = require('../model/accountModel').AccountModel;
-var TransactionModel = require('../model/transactionModel').TransactionModel;
-var AppointmentModel = require('../model/appointmentModel').AppointmentModel;
+var {bookshelf} = require('../db/dbconnect');
+var {TransactionModel} = require('../model/transactionModel');
+var {AppointmentModel} = require('../model/appointmentModel');
 var Promise = require('bluebird');
 require('../model/profileModel').ProfileModel;
 var Joi = require('joi');
@@ -10,12 +8,6 @@ var Promise = require('bluebird');
 var UserModel = bookshelf.Model.extend({
     tableName:"users",
     idAttribute:'iduser',
-    emp_locations:function(){
-        return this.hasMany('Emp_LocationModel','iduser','iduser');
-    },
-    account:function(){
-        return this.hasOne('AccountModel','id','iduser');
-    },
     user_give:function(){
         return this.hasMany('TransactionModel','user_give','iduser');
     },

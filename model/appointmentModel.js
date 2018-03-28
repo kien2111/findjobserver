@@ -1,19 +1,11 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
+var {bookshelf} = require('../db/dbconnect');
 var Promise = require('bluebird');
-require('./employeeModel').EmployeeModel;
-require('./employerModel').EmployerModel;
-require('../model/userModel').UserModel;
+var {UserModel} = require('../model/userModel').UserModel;
 var {TransactionModel,TransactionCollection} = require('../model/transactionModel');
 var AppointmentModel = bookshelf.Model.extend({
     tableName:"appointments",
     idAttribute:'idappointment',
     hasTimestamps:true,
-    employee:function(){
-        return this.belongsTo('EmployeeModel','employee_id','idemployee');
-    },
-    employer:function(){
-        return this.belongsTo('EmployerModel','employer_id','idemployer');
-    },
     user_create_appointment(){
         return this.belongsTo('UserModel','user_who_create_appointment','iduser');
     },

@@ -1,4 +1,4 @@
-var bookshelf = require('../db/dbconnect').bookshelf;
+var {bookshelf} = require('../db/dbconnect');
 var Joi = require('joi');
 var {Criteria_RateModel,Criteria_RateCollection} = require('./criteria_rateModel');
 require('./userModel').UserModel;
