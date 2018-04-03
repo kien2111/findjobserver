@@ -1,6 +1,6 @@
 var {bookshelf} = require('../db/dbconnect');
 var Promise = require('bluebird');
-var {UserModel} = require('../model/userModel').UserModel;
+var {UserModel} = require('../model/userModel');
 var {TransactionModel,TransactionCollection} = require('../model/transactionModel');
 var AppointmentModel = bookshelf.Model.extend({
     tableName:"appointments",

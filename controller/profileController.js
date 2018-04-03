@@ -1,15 +1,26 @@
 var _ = require('lodash');
-var Profile = require('../model/profileModel');
-var Category_Profile = require('../model/category_profileModel');
-var Category = require('../model/categoryModel');
-var Account = require('../model/accountModel');
+var {ProfileModel} = require('../model/profileModel');
+var {CategoryModel,CategoryCollection} = require('../model/categoryModel');
 var uuidv4 = require('uuid/v4');
-var knex = require('../db/dbconnect').knex;
-var User = require('../model/userModel');
-var TransactionModel = require('../model/transactionModel').TransactionModel;
+var {knex} = require('../db/dbconnect');
+var {UserModel} = require('../model/userModel');
+var Promise = require('bluebird');
+var {TransactionModel} = require('../model/transactionModel');
+exports.search = function(req,res){
+    Promise.all([CategoryModel.searchCategory(req.query),ProfileModel.searchProfile(req.query)]).tap(console.log).then(arr=>{
+        res.json({message:"search OK",data:{
+            lst_category:arr[0],
+            lst_profile:arr[1],
+        }})
+    })
+    .catch(console.log)
+    .catch(err=>{
+        res.json({message:`${err.message}`,data:null});
+    })
+}
 exports.getHighRateProfile = function(req,res){
     
-    Profile.ProfileModel.gethighrateprofile(req.query)
+    ProfileModel.gethighrateprofile(req.query)
     //.then(console.log)
     .then(result=>{
         let pagination = result.pagination;

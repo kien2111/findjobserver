@@ -21,7 +21,6 @@ app.use(morgan('combined',{stream:logStream}));
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 app.use(cookiParser);
-app.use('/Accounts',require('./router/accountRoute'));
 app.use('/Categories',require('./router/categoryRoute'));
 app.use('/Profiles',require('./router/profileRoute'));
 app.use('/Admins',require('./router/adminRoute'));
@@ -29,8 +28,7 @@ app.use('/Images',require('./router/imageRoute'));
 app.use('/Rates',require('./router/rateRoute'));
 app.use('/Users',require('./router/userRoute'));
 app.use(function(req,res,next){
-    
-    if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0]==='bearer'){
+    if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0]==='Bearer'){
         jwt.verify(req.headers.authorization.split(' ')[1],process.env.SECRET_KEY,function(err,decoded){
             if(err)req.user = undefined;
             req.user = decoded;
@@ -41,7 +39,3 @@ app.use(function(req,res,next){
         next();
     }
 });
-Object.prototype.JsonResponse = function(message,data=null){
-    this.message = message;
-    this.data = data;
-}
