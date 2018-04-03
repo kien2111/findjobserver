@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var Account = require("../model/accountModel");
 var User= require("../admin/user");
 exports.getAllUser = function (req,res){
@@ -5,6 +6,11 @@ exports.getAllUser = function (req,res){
     //let a = req.body;
     Account.AccountModel.fetchAll().then(function(model)
     {
+=======
+var {UserModel} = require('../model/userModel');
+exports.getAllUser = function (req,res){
+    UserModel.fetchAll().then(function(model){
+>>>>>>> f3a184fc45f62066903d15ef7f9a80677392b3a5
         res.status(200).json({message:"fetch OK",data:model.toJSON()});
     }).catch(function(err)
     {
@@ -13,7 +19,7 @@ exports.getAllUser = function (req,res){
 }
 
 exports.getAllUser1 = function (req,res){
-    Account.AccountModel.where('id', 1).fetch({withRelated:['accounts_roles.role']}).then(function(model){
+    UserModel.where('id', 1).fetch({withRelated:['accounts_roles.role']}).then(function(model){
         res.status(200).json({message:"fetch OK",data:model.toJSON()});
     }).catch(function(err){
         res.status(404).json({message:`${err}`,data:null});

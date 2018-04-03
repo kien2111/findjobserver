@@ -2,7 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var controller = require('../controller/categoryController');
-var accountcontroller = require('../controller/accountController');
+var usercontroller = require('../controller/userController');
 router.use((req,res,next)=>{
     next();
 });
