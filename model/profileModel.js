@@ -17,11 +17,10 @@ var ProfileModel = bookshelf.Model.extend({
         return this.hasOne('CategoryModel','idcategory','category');
     }
 },{
-    gethighrateprofile:Promise.method(function({idcategory,page}){
+    getprofile:Promise.method(function({idcategory,page}){
         //return this.forge({category:idcategory}).fetch({withRelated:['user']})
         return this.forge().query(function(db){
             db.innerJoin('users','users.iduser','profiles.idprofile');
-            db.innerJoin('accounts','accounts.id','users.iduser');
             db.groupBy('profiles.idprofile');
             db.where('profiles.category','=',idcategory);
         })
@@ -29,11 +28,8 @@ var ProfileModel = bookshelf.Model.extend({
         .fetchPage({
             pageSize:3,
             page:page?page:1,
-            withRelated:['user.account','category','user.user_receive_rate']
+            withRelated:['category','user.user_receive_rate']
         })
-    }),
-    getskilledfreelancerprofile:Promise.method(function(){
-        //not handle  
     }),
     searchProfile:Promise.method(function({query}){
         return this.forge().query(qb=>{

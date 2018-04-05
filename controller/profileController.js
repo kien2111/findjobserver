@@ -18,9 +18,9 @@ exports.search = function(req,res){
         res.json({message:`${err.message}`,data:null});
     })
 }
-exports.getHighRateProfile = function(req,res){
+exports.getProfile = function(req,res){
     
-    ProfileModel.gethighrateprofile(req.query)
+    ProfileModel.getprofile(req.query)
     //.then(console.log)
     .then(result=>{
         let pagination = result.pagination;

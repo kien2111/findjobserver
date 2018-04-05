@@ -7,6 +7,6 @@ router.use((req,res,next)=>{
     next();
 });
 
-router.get('/gethighrateprofile',controller.getHighRateProfile);
+router.get('/getprofile',controller.getProfile);
 router.get('/search',controller.search);
 module.exports = router;
