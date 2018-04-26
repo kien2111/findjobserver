@@ -1,3 +1,5 @@
+var { CategoryModel } = require('../model/categoryModel');
+
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
 var Promise = require('bluebird');
@@ -45,7 +47,7 @@ var UserModel = bookshelf.Model.extend({
          *  status : 1 or 0
          * }
          */
-        return value.rolename=='user' && value.status==1;
+        return value.status==1;
     },
     processResponse:function(obj){
             /**
@@ -66,7 +68,7 @@ var UserModel = bookshelf.Model.extend({
     //bussiness logic
     initialize:function(){
         this.constructor.__super__.initialize.apply(this,arguments);
-        this.on('saving',this.validateSave);
+        //this.on('saving',this.validateSave);
     },
     validateSave:function(){
         return Joi.validate(this.attributes,JoiUserSchema);
@@ -75,13 +77,18 @@ var UserModel = bookshelf.Model.extend({
 },{
     login:Promise.method(function({username,password}){
         if(!password || !username)throw new Error('Email or Username and password are required');
-        return this.forge({username:username}).fetch({require:true,withRelated:['accounts_roles.role']}).tap(account=>{
-            return bcrypt.compareAsync(password,account.get('password')).then(res=>{
+        return this.forge({username:username})
+        .fetch({require:true,withRelated:['accounts_roles.role','profile.category']})
+        .tap(account=>{
+            console.log(account.toJSON().profile);
+            return bcrypt.compareAsync(password,account.get('password'))
+            .then(res=>{
                 if(!res) throw new Error('Invalid Password');
                 let result = account.toJSON().accounts_roles
                 account.role_list = result.map(account.processResponse);
                 if(!account.role_list.find(account.checkrole))throw new Error("The account have been blocked");
                 account.set('role_list',account.role_list);
+                account.set('profile',account.toJSON().profile);
                 account.set('access_token',jwt.sign(account.toJSON(),process.env.SECRET_KEY));
             });
         })
@@ -104,7 +111,32 @@ var UserModel = bookshelf.Model.extend({
         });
     }),
     getdetailprofile:Promise.method(function({iduser}){
-        return this.forge(iduser).fetch({withRelated:['account','profile'],require:true});
+        return bookshelf.knex.select('*',bookshelf.knex.raw("(select AVG(average_point) from rates as r where r.user_who_receive_this_rate = u.iduser)  as point"))
+        .from('users as u')
+        .where(bookshelf.knex.raw('iduser = ?',iduser))
+        .first();
+    }),
+    updateProfile:Promise.method(function(user){
+        let self = this;
+        let dataupdate = _.omit(user,['profile','role_list']);
+        let category = _.omit(user.profile.category,['num_profile']);
+        let profile = _.omit(user.profile,['category']);
+        dataupdate.birthday = new Date(dataupdate.birthday);
+        return bookshelf.transaction(function(trx){
+            return self.forge(dataupdate)
+                    .where({iduser:user.iduser})
+                    .save(null,{method:'update',transacting:trx})
+                    .tap(userresult=>{
+                        return ProfileModel.forge(profile)
+                        .where({idprofile:profile.idprofile})
+                        .save(null,{method:'update',transacting:trx});
+                    })
+                    .tap(profileresult=>{
+                        return CategoryModel.forge(category)
+                        .where({idcategory:category.idcategory})
+                        .save(null,{method:'update',transacting:trx});
+                    });
+        })
     }),
     sigupadmin:Promise.method(function(obj){
         let role = obj.role;
@@ -166,15 +198,24 @@ var UserModel = bookshelf.Model.extend({
 })
 const JoiUserSchema = Joi.object().keys({
     iduser:Joi.string(),
-    username:Joi.string(),
-    password:Joi.string().min(1).max(200),
-    email:Joi.string().email(),
-    avatar:Joi.string(),
-    birthday:Joi.date(),
     realname:Joi.string().min(6).max(200),
+    phone_company:Joi.string().min(5).max(20),
+    phone_individual:Joi.string().max(20).min(5),
     brand_name_company:Joi.string().min(3).max(200),
+    logo_company:Joi.string().max(255),
+    gender:Joi.number(),
+    birthday:Joi.date(),
+    budget_from:Joi.number(),
+    budget_to:Joi.number(),
+    about_company:Joi.string().max(2000),
+    username:Joi.string().max(200).min(6),
+    password:Joi.string().min(1).max(200),
+    email:Joi.string().email().max(200).min(8),
+    account_balance:Joi.number(),
+    avatar:Joi.string().max(255).min(1),
     gender:Joi.number(),
     logo_company:Joi.string().max(255),
+
 });
 
 var Users = bookshelf.Collection.extend({

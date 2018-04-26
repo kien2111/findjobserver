@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 var RateModel = bookshelf.Model.extend({
     tableName:"rates",
     idAttribute:'idrate',
+    hidden:['user_who_rate_this','user_who_receive_this_rate'],
     initialize:function(){
         this.constructor.__super__.initialize.apply(this,arguments);
        // this.on('saving',this.validateSave)
@@ -17,7 +18,7 @@ var RateModel = bookshelf.Model.extend({
         return this.hasMany('Criteria_RateModel','rate_id','idrate');
     },
     user_create_rate:function(){
-        return this.belongsTo('UserModel','iduser','user_who_rate_this');
+        return this.hasOne('UserModel','iduser','user_who_rate_this');
     },
     user_take_rate:function(){
         return this.belongsTo('UserModel','iduser','user_who_receive_this_rate');
@@ -53,6 +54,29 @@ var RateModel = bookshelf.Model.extend({
             })
         })
     }),
+    getListRate:Promise.method(function({iduser,page}){
+        return this.forge().query(function(db){
+            db.innerJoin('users','users.iduser','rates.user_who_rate_this');
+            db.groupBy('rates.idrate');
+            db.where('rates.user_who_receive_this_rate','=',iduser);
+        })
+        .orderBy('rates.idrate','DESC')
+        .fetchPage({
+            pageSize:3,
+            page:page?page:1,
+            withRelated:['user_create_rate']
+        })
+    }),
+    getAveragePoint:Promise.method(function({iduser}){
+        return this.forge().where({user_who_receive_this_rate:iduser})
+        .fetchAll({columns:['average_point']}).then(result=>{
+            let average = 0
+            result.toJSON().forEach(element => {
+                average+=element.average_point;
+            });
+            return average/result.toJSON().length;
+        });
+    }),
 });
 const schemaValidateRate = Joi.object().keys({
 
@@ -62,3 +86,4 @@ var Rates = bookshelf.Collection.extend({
 });
 module.exports.RateModel = bookshelf.model('RateModel',RateModel);
 module.exports.RateCollection = bookshelf.collection('RateCollection',Rates);
+
