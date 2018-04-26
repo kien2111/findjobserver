@@ -21,10 +21,7 @@ app.use(morgan('combined',{stream:logStream}));
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 app.use(cookiParser);
-<<<<<<< HEAD
-=======
 app.use('/Appointments',require('./router/appointmentRoute'));
->>>>>>> d9919b5c154d0afa61992fc2119af6c361fa5b30
 app.use('/Categories',require('./router/categoryRoute'));
 app.use('/Profiles',require('./router/profileRoute'));
 app.use('/Admins',require('./router/adminRoute'));
@@ -42,9 +39,5 @@ app.use(function(req,res,next){
         req.user = undefined;
         next();
     }
-<<<<<<< HEAD
-});
-=======
 });
 
->>>>>>> d9919b5c154d0afa61992fc2119af6c361fa5b30
