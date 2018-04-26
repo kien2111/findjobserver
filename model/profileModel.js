@@ -3,6 +3,8 @@ var _ = require('lodash');
 var Promise = require('bluebird');
 var {Request_Update_ProfileModel} = require('../model/request_update_profileModel');
 var {UserModel} = require('../model/userModel');
+var {CityModel} = require('../model/cityModel');
+var {DistrictModel} = require('../model/districtModel');
 var {CategoryModel} = require('../model/categoryModel');
 var ProfileModel = bookshelf.Model.extend({
     tableName:"profiles",
@@ -15,20 +17,34 @@ var ProfileModel = bookshelf.Model.extend({
     },
     category:function(){
         return this.hasOne('CategoryModel','idcategory','category');
+    },
+    city:function(){
+        return this.hasOne('CityModel','cityid','cityid');
+    },
+    district:function(){
+        return this.hasOne('DistrictModel','distid','distid');
     }
 },{
-    getprofile:Promise.method(function({idcategory,page}){
+    getprofile:Promise.method(function({idcategory,page,filter}){
         //return this.forge({category:idcategory}).fetch({withRelated:['user']})
         return this.forge().query(function(db){
             db.innerJoin('users','users.iduser','profiles.idprofile');
+            db.leftJoin('cities','cities.cityid','profiles.cityid');
+            db.leftJoin('districts','districts.distid','profiles.distid');
             db.groupBy('profiles.idprofile');
             db.where('profiles.category','=',idcategory);
+            if(filter){
+                db.andWhere(function(){
+                    this.where('cities.namecity','=',filter);
+                    this.orWhere('districts.namedist','=',filter);
+                });
+            }
         })
         .orderBy('profiles.level','DESC')
         .fetchPage({
             pageSize:3,
             page:page?page:1,
-            withRelated:['category','user.user_receive_rate']
+            withRelated:['category','user.user_receive_rate','district','city']
         })
     }),
     searchProfile:Promise.method(function({query}){

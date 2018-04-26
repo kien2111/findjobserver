@@ -9,6 +9,9 @@ var CategoryModel = bookshelf.Model.extend({
     },
 
 },{
+    getAllCategories:Promise.method(function(){
+        return bookshelf.knex.select('*',bookshelf.knex.raw("(select count(*) from profiles as p where p.category = c.idcategory) as num_profile")).from('categories as c'); 
+    }),
     searchCategory:Promise.method(function({query}){
         return this.forge({category_name:query})
                 .query(qb=>{

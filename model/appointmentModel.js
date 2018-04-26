@@ -12,6 +12,38 @@ var AppointmentModel = bookshelf.Model.extend({
     user_take_appointment(){
         return this.belongsTo('UserModel','user_who_receive_appointment','iduser');
     }
+    
+},{
+    fetchOnProgressFreelancerAppointment:Promise.method(function({iduser,page}){
+        //act as freelancer request
+        return this.forge().query(function(db){
+            db.innerJoin('users','users.iduser','appointments.user_who_create_appointment');
+            db.groupBy('users.iduser');
+            db.where('appointments.user_who_receive_appointment','=',iduser);
+            db.where('appointments.status','=',enumStatusAppointment.OnProgress);
+        })
+        .orderBy('appointments.created_at','DESC')
+        .fetchPage({
+            pageSize:3,
+            page:page?page:1,
+            withRelated:['user_create_appointment']
+        })
+    }),
+    fetchOnProgressEmployerAppointment:Promise.method(function({iduser,page}){
+        //act as employer request
+        return this.forge().query(function(db){
+            db.innerJoin('users','users.iduser','appointments.user_who_receive_appointment');
+            db.groupBy('users.iduser');
+            db.where('appointments.user_who_create_appointment','=',iduser);
+            db.where('appointments.status','=',enumStatusAppointment.OnProgress);
+        })
+        .orderBy('appointments.created_at','DESC')
+        .fetchPage({
+            pageSize:3,
+            page:page?page:1,
+            withRelated:['user_take_appointment']
+        })
+    })
 });
 var Appointments = bookshelf.Collection.extend({
     model:AppointmentModel,
@@ -34,6 +66,14 @@ var Appointments = bookshelf.Collection.extend({
     declineAppointment:Promise.method(function(){
 
     }),
+    
 });
 module.exports.AppointmentModel = bookshelf.model('AppointmentModel',AppointmentModel);
 module.exports.AppointmentCollection = bookshelf.collection('AppointmentCollection',Appointments);
+
+const enumStatusAppointment = {
+    OnProgress:0,
+    Fail:1,
+    Success:2,
+    OnConFlict:3
+}
