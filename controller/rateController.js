@@ -1,7 +1,8 @@
 var {RateModel} = require('../model/rateModel');
 var _ = require('lodash');
 exports.ratefreelancer = function(req,res){
-    RateModel.dorate(req.body)
+    console.log(JSON.stringify(req.body));
+    RateModel.doRate(req.body)
         .tap(console.log)
         .then(result=>{
             res.status(200).json({message:"Rate Success",data:null});

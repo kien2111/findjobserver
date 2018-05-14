@@ -6,6 +6,8 @@ var {knex} = require('../db/dbconnect');
 var {UserModel} = require('../model/userModel');
 var Promise = require('bluebird');
 var {TransactionModel} = require('../model/transactionModel');
+var {Pakage_UpdateModel} = require('../model/pakage_updateModel');
+var {Request_Update_ProfileModel} = require('../model/request_update_profileModel');
 exports.search = function(req,res){
     Promise.all([CategoryModel.searchCategory(req.query),ProfileModel.searchProfile(req.query)]).tap(console.log).then(arr=>{
         res.json({message:"search OK",data:{
@@ -13,10 +15,87 @@ exports.search = function(req,res){
             lst_profile:arr[1],
         }})
     })
-    .catch(console.log)
     .catch(err=>{
         res.json({message:`${err.message}`,data:null});
     })
+    .catch(console.log)
+}
+exports.doTaskPublishProfile = function(req,res){
+    ProfileModel.doTaskPublishProfile(req.body)
+                .tap(console.log)
+                .then(result=>{
+                    console.log('success');
+                    res.status(200).json({message:"Success request",data:null});
+                })
+                .catch(console.log)
+                .catch(err=>{
+                    res.status(403).json({message:err.message,data:null});
+                })
+}
+function clean(obj) {
+    for (var propName in obj) { 
+      if (obj[propName] === null || obj[propName] === undefined) {
+        delete obj[propName];
+      }
+    }
+    return obj;
+}
+exports.getListPakageUpgrade = function(req,res){
+    Pakage_UpdateModel.getListPakageUpgrade()
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"fetch OK",data:result.toJSON()});
+            })
+            .catch(err=>{
+                res.status(403).json({messagee:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.getLastestProcessRequest = function(req,res){
+    Request_Update_ProfileModel.getLastestProcessRequest(req.query.iduser)
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"fetch OK",data:result.toJSON()});
+            })
+            .catch(err=>{
+                console.log(err.message);
+                res.status(403).json({messagee:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.doTaskUpgradeProfile = function(req,res){
+    ProfileModel.doTaskUpgradeProfile(req.body)
+        .tap(console.log)
+        .then(result=>{
+            res.status(200).json({message:"request upgrade profile OK",data:null});
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(403).json({message:err.message,data:null});
+        });
+}
+exports.deleteLastestUpgradeRequest = (req,res)=>{
+    Request_Update_ProfileModel.deleteLastestUpgradeRequest(req.query.profile_id)
+    .tap(console.log)
+    .then(result=>{
+        res.status(200).json({message:"Hủy thành công",data:null});
+    })
+    .catch(err=>{
+        res.status(403).json({message:err.message,data:null});
+    })
+}
+exports.fetchDetaiProfileWithId = function(req,res){
+    ProfileModel.fetchDetaiProfileWithId(req.query.idprofile)
+            .tap(console.log)
+            .then(result=>{
+                let user = result.toJSON().user;
+                let returnresult = Object.assign(_.omit(result.toJSON(),['user']),user);
+                res.status(200).json({message:"Fetch OK",data:clean(returnresult)});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
 }
 exports.getProfile = function(req,res){
     
@@ -31,7 +110,7 @@ exports.getProfile = function(req,res){
             nextpage:req.query.page>=pagination.pageCount?-1:pagination.page+1,
             profiles:result.toJSON().map(element=>{
                 const {user,account} = {user:element.user,account:element.user.account};
-                return Object.assign(_.omit(element,['user','account']),_.omit(user,['account']),account);
+                return clean(Object.assign(_.omit(element,['user','account']),_.omit(user,['account']),account));
             }),
         }});
     })

@@ -24,4 +24,5 @@ router.post('/blockuser',adminController.blockuser);
 router.get('/getallprofile',controller.getAllProfile);
 router.post('/blockprofile',controller.blockprofile);
 router.post('/getuserblock',adminController.getAllUserBlock);
+router.post('/acceptallrequestupgradeprofile',adminController.acceptAllRequestUpgrade);
 module.exports = router;

@@ -1,6 +1,6 @@
 var {UserModel} = require('../model/userModel');
 var {RoleModel} = require('../model/account_roleModel');
-
+var {ProfileModel} = require('../model/profileModel');
 exports.getAllUser = function (req,res){
     UserModel.fetchAll().then(function(model){
         res.status(200).json({message:"fetch OK",data:model.toJSON()});
@@ -121,4 +121,14 @@ exports.blockuser = function(req,res){
     }
     catch(error){
     }
+}
+
+exports.acceptAllRequestUpgrade = function(req,res){
+    ProfileModel.adminAcceptProfileUpgrade(req.body).tap(console.log).then(result=>{
+        res.status(200).json({message:"accept request OK",data:null});
+    })
+    .catch(err=>{
+        console.log(err);
+        res.status(403).json({message:err.message,data:null});
+    })
 }
