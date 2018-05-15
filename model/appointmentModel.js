@@ -1,6 +1,12 @@
 var {bookshelf} = require('../db/dbconnect');
 var Promise = require('bluebird');
 var _ = require('lodash');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    TransactionType,
+    enumStatusAppointment} = require('../model/globalconstant');
 var {UserModel} = require('../model/userModel');
 var {TransactionModel,TransactionCollection} = require('../model/transactionModel');
 var AppointmentModel = bookshelf.Model.extend({
@@ -69,8 +75,20 @@ var AppointmentModel = bookshelf.Model.extend({
     }),
     bookingAppointment:Promise.method(function(appointment){
         appointment.estimate_time = new Date(appointment.estimate_time);
+        let transation = {
+            amount_of_coin:appointment.deposit_fee,
+            user_give:user_who_create_appointment,
+            user_receive:user_who_receive_appointment,
+            purpose:appointment.name,
+            status:enumTransation.ON_PROGRESS,
+            transaction_type:TransactionType.Booking_Appointment,
+        };
         let saveddata = _.omit(appointment,['deposit_fee']);
-        return this.forge(saveddata).save(null,{method:"insert"});
+        return bookshelf.transaction(trx=>{
+            return this.forge(saveddata).save(null,{method:"insert",transacting:trx}).tap(result=>{
+                return TransactionModel.insertTransaction(transation,trx);
+            });
+        });
     }),
     acceptAppointment:Promise.method(function({idappointment}){
         return this.forge({idappointment:idappointment}).fetch({require:true}).tap(res=>{
@@ -137,14 +155,4 @@ var Appointments = bookshelf.Collection.extend({
 module.exports.AppointmentModel = bookshelf.model('AppointmentModel',AppointmentModel);
 module.exports.AppointmentCollection = bookshelf.collection('AppointmentCollection',Appointments);
 
-const enumStatusAppointment = {
-    OnProgress:0,
-    OnWaitAdminAccepted:1,
-    Fail:2,
-    Success:3,
-    OnConFlict:4
-}
-const enumhistoryOrOnProgress ={
-    ON_PROGRESS:1,
-    HISTORY:2
-}
+

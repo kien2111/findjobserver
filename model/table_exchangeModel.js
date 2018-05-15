@@ -1,6 +1,11 @@
 var {bookshelf} = require('../db/dbconnect');
 var {CreditModel} = require('./creditModel');
 var Promise = require('bluebird');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var _ = require('lodash');
 var Table_ExchangeModel = bookshelf.Model.extend({
     tableName:"table_exchange",

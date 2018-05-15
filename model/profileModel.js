@@ -1,12 +1,19 @@
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
 var Promise = require('bluebird');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    TransactionType,
+    enumStatusAppointment} = require('../model/globalconstant');
 var {Request_Update_ProfileModel} = require('../model/request_update_profileModel');
 var {UserModel} = require('../model/userModel');
 var {CityModel} = require('../model/cityModel');
 var {DistrictModel} = require('../model/districtModel');
 var {CategoryModel} = require('../model/categoryModel');
 var {Pakage_UpdateModel} = require('../model/pakage_updateModel');
+var {TransactionModel} = require('../model/transactionModel');
 var ProfileModel = bookshelf.Model.extend({
     tableName:"profiles",
     idAttribute:"idprofile",
@@ -74,10 +81,12 @@ var ProfileModel = bookshelf.Model.extend({
          * check pocket money
          * check old request
          */
-        return new ProfileModel({idprofile:profile_id})
-        .fetch({withRelated:['user']})
+        return bookshelf.transaction(trx=>{
+            return ProfileModel.forge().where({idprofile:profile_id})
+        .fetch({withRelated:['user'],transacting:trx})
         .tap(profile=>{
-            return Pakage_UpdateModel.forge().fetch({level_expected:level_expected,idpakage:idpakage})
+            return Pakage_UpdateModel.forge().where({level_expected:level_expected,idpakage:idpakage})
+            .fetch({transacting:trx})
             .tap(pakage=>{
                 return Request_Update_ProfileModel.forge().query(db=>{
                     let date = new Date();
@@ -86,24 +95,34 @@ var ProfileModel = bookshelf.Model.extend({
                     db.andWhere('approve','=',Approve_Upgrade_Profile.ON_PROGRESS);
                     db.andWhere('created_at','>=',date)
                 })
-                .fetch()
+                .fetch({transacting:trx})
                 .tap(oldrequest=>{
                     if(!oldrequest){
                         // no old request in last one year till now
                         if(profile.toJSON().user.account_balance>=pakage.get('pakage_fee')){
-                            return Request_Update_ProfileModel.insertRequest({profile_id:profile_id,
+                            return Promise.all([Request_Update_ProfileModel.insertRequest({profile_id:profile_id,
                                 level_expected:level_expected,
                                 approve:Approve_Upgrade_Profile.ON_PROGRESS,
-                                idpakage:idpakage});
+                                idpakage:idpakage},
+                                trx),
+                                TransactionModel.insertTransaction({
+                                    purpose:"Nâng cấp tài khoản",
+                                    user_give:profile_id,
+                                    amount_of_coin:pakage.get('pakage_fee'),
+                                    status:enumTransation.ON_PROGRESS,
+                                    transaction_type:TransactionType.Upgrade_Profile,
+                                },trx)
+                            ])
                         }else{
                             throw new Error("Bạn không đủ tiền để nâng cấp tài khoản");
                         }
-                    }else{
+                        }else{
                         // have old request with same level_expected
                         throw new Error("Hồ sơ của bạn đang chờ để được thăng cấp");
-                    }
-                });
+                        }
+                    });
                 
+                })
             })
         });
     }),

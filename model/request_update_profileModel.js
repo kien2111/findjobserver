@@ -1,6 +1,11 @@
 var {bookshelf} = require('../db/dbconnect');
 var {ProfileModel} = require('./profileModel');
 var Promise = require('bluebird');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var _ = require('lodash');
 var Request_Update_ProfileModel = bookshelf.Model.extend({
     tableName:"requests_update_profile",
@@ -25,20 +30,15 @@ var Request_Update_ProfileModel = bookshelf.Model.extend({
         .orderBy('-created_at')
         .fetch({require:true});
     }),
-    deleteLastestUpgradeRequest:Promise.method(function(profile_id){
-        return this.forge({approve:Approve_Upgrade_Profile.DECLINE})
+    deleteLastestUpgradeRequest:Promise.method(function(profile_id,trx){
+        return this.forge({transacting:trx})
             .where({profile_id:profile_id,approve:Approve_Upgrade_Profile.ON_PROGRESS})
-            .save(null,{method:"update"});
+            .save({approve:Approve_Upgrade_Profile.DECLINE},{method:"update"});
     }),
 });
 var Request_Update_ProfileModels = bookshelf.Collection.extend({
     model:Request_Update_ProfileModel,
 });
-var Approve_Upgrade_Profile = {
-    NORMAL:1,
-    ON_PROGRESS:2,
-    ACTIVE:3,
-    DECLINE:5
-}
+
 module.exports.Request_Update_ProfileModel = bookshelf.model('Request_Update_ProfileModel',Request_Update_ProfileModel);
 module.exports.Request_Update_ProfileCollection = bookshelf.collection('Request_Update_ProfileCollection',Request_Update_ProfileModels);

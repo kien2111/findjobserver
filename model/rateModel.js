@@ -1,6 +1,11 @@
 var {bookshelf} = require('../db/dbconnect');
 var Joi = require('joi');
 var {Criteria_RateModel,Criteria_RateCollection} = require('./criteria_rateModel');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 require('./userModel').UserModel;
 var Promise = require('bluebird');
 var RateModel = bookshelf.Model.extend({

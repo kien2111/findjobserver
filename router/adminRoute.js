@@ -25,4 +25,7 @@ router.get('/getallprofile',controller.getAllProfile);
 router.post('/blockprofile',controller.blockprofile);
 router.post('/getuserblock',adminController.getAllUserBlock);
 router.post('/acceptallrequestupgradeprofile',adminController.acceptAllRequestUpgrade);
+router.get('/fetchlastestrevenuepermonth',adminController.fetchLastestRevenuePerMonth);
+router.get('/fetchlastestrevenueperyear',adminController.fetchLastestRevenuePerYear);
+router.get('/fetchlastestrevenueperday',adminController.fetchLastestFiveDayRevenue);
 module.exports = router;

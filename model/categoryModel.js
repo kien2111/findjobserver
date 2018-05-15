@@ -1,6 +1,11 @@
 var {bookshelf} = require('../db/dbconnect');
 var {ProfileModel} = require('./profileModel');
 var Promise = require('bluebird');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var CategoryModel = bookshelf.Model.extend({
     tableName:"categories",
     idAttribute:'idcategory',

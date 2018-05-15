@@ -1,5 +1,9 @@
 var { CategoryModel } = require('../model/categoryModel');
-
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
 var Promise = require('bluebird');

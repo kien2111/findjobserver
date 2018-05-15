@@ -118,7 +118,6 @@ exports.SyncData = function(req,res){
     .catch(err=>{res.status(403).json({message:err.message,data:null})})
 }
 exports.topUpMoney = function(req,res){
-    console.log(req.body);
     CreditModel.topUpMoney(req.body)
         .tap(console.log)
         .then(result=>{
