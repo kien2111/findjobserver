@@ -35,6 +35,7 @@ exports.loginRequired=function(req,res,next){
     }
 }
 exports.Login = function(req,res){
+    console.log(req.body);
     const {username,password,email} = req.body;
     UserModel.login(req.body).then(account=>{
         res.status(200).json({message:"Login OK",

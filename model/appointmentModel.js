@@ -43,7 +43,26 @@ var AppointmentModel = bookshelf.Model.extend({
             page:page?page:1,
             withRelated:['user_take_appointment']
         })
-    })
+    }),
+    fetchAllAppointment:Promise.method(function(){
+        return this.forge().where({status:enumStatusAppointment.OnWaitAcceptAppointment})
+                .fetchAll({withRelated:['user_create_appointment','user_take_appointment']});
+    }),
+
+    acceptAppointment:Promise.method(function({idappointment}){
+        if(!idappointment) throw new Error("Pls provide data to signup");
+        return bookshelf.transaction(trx=>{
+            return new AppointmentModel({status:enumStatusAppointment.Success}).where({idappointment:idappointment})
+                .save(null,{method:"update",transacting:trx,patch:true});
+        })
+    }),
+    skipAppointment:Promise.method(function({idappointment}){
+        if(!idappointment) throw new Error("Pls provide data to signup");
+        return bookshelf.transaction(trx=>{
+            return new AppointmentModel({status:enumStatusAppointment.Fail}).where({idappointment:idappointment})
+                .save(null,{method:"update",transacting:trx,patch:true});
+        })
+    }),
 });
 var Appointments = bookshelf.Collection.extend({
     model:AppointmentModel,
@@ -73,7 +92,8 @@ module.exports.AppointmentCollection = bookshelf.collection('AppointmentCollecti
 
 const enumStatusAppointment = {
     OnProgress:0,
-    Fail:1,
-    Success:2,
-    OnConFlict:3
+    OnWaitAcceptAppointment:1,
+    Fail:2,
+    Success:3,
+    OnConFlict:4
 }

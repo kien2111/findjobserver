@@ -1,6 +1,7 @@
 var {UserModel} = require('../model/userModel');
 var {RoleModel} = require('../model/account_roleModel');
-
+var {IncomeModel} = require('../model/incomeModel');
+var {Request_Update_ProfileModel} =require('../model/request_update_profileModel');
 exports.getAllUser = function (req,res){
     UserModel.fetchAll().then(function(model){
         res.status(200).json({message:"fetch OK",data:model.toJSON()});
@@ -12,8 +13,6 @@ exports.getAllUser = function (req,res){
 
 //get user block
 exports.getAllUserBlock = function (req,res){
-
-    console.log(req.body);
 
     UserModel.getAllBlockedUser(req.body)
     .tap(console.log)
@@ -71,6 +70,9 @@ exports.insertuser = function(req,res,next){
                     console.log(resuilt);
                 }
             })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            });
         } 
     }
     catch(error){
@@ -81,6 +83,7 @@ exports.insertuser = function(req,res,next){
 exports.updateuser = function(req,res){
     try{
         let userupdate= req.body;
+        console.log(req.body);
         if(userupdate==null){
             res.status(200).json({message:"data null",data:null});
         }else{
@@ -121,4 +124,31 @@ exports.blockuser = function(req,res){
     }
     catch(error){
     }
+}
+  //get all statisfy
+  exports.getAllStatisfy = function(req,res){
+    try{
+        IncomeModel.fetchAll().then(function(model){
+            res.status(200).json({message:"fetch OK",data:model.toJSON()});
+        }).catch(function(err)
+        {
+            res.status(404).json({message:`${err}`,data:null});
+        });
+    }
+    catch(err){
+
+    }
+}
+//upgrade account
+exports.getAllUpgradeAccount = function(req,res){
+    Request_Update_ProfileModel.getAllUpgradeAccount()
+    .tap(console.log)
+    .then(function(model){
+        res.status(200).json({message:"fetch OK",data:model.toJSON()});
+    })
+    .catch(console.log)
+    .catch(function(err){
+        res.status(404).json({message:`${err}`,data:null});
+    });
+
 }

@@ -12,6 +12,7 @@ const storage = multer.diskStorage({
 var upload = multer({ storage: storage});
 var adminController = require('../controller/adminController');
 var controller = require('../controller/profileController');
+var appointmentController= require('../controller/appointmentController');
 
 router.use((req,res,next)=>{
     next();
@@ -24,4 +25,9 @@ router.post('/blockuser',adminController.blockuser);
 router.get('/getallprofile',controller.getAllProfile);
 router.post('/blockprofile',controller.blockprofile);
 router.post('/getuserblock',adminController.getAllUserBlock);
+router.get('/getallstatisfy',adminController.getAllStatisfy);
+router.get('/getallappointment',appointmentController.fetchAllWaitAppointment);
+router.post('/acceptAppointment',appointmentController.acceptAppointment)
+router.post('/skipAppointment',appointmentController.skipAppointment)
+router.get('/getallupgradeaccount',adminController.getAllUpgradeAccount)
 module.exports = router;

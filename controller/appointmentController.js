@@ -38,3 +38,37 @@ exports.fetchOnProgressEmployerAppointment = function(req,res){
         res.status(403).json({message:err.message,data:null});
     });
 }
+
+exports.fetchAllWaitAppointment = function(req,res){
+    AppointmentModel.fetchAllAppointment()
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"fetch OK",data:result});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.acceptAppointment = function(req,res){
+    AppointmentModel.acceptAppointment(req.body)
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"update OK",data:result});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.skipAppointment = function(req,res){
+    AppointmentModel.skipAppointment(req.body)
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"update OK",data:result});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
