@@ -1,4 +1,4 @@
-const enumTransation ={
+const enumTransaction ={
     ON_PROGRESS:0,
     SUCCESS:1,
     FAIL:2,
@@ -35,5 +35,5 @@ module.exports.Approve_Upgrade_Profile = Approve_Upgrade_Profile;
 module.exports.enumStatus = enumStatus;
 module.exports.enumhistoryOrOnProgress = enumhistoryOrOnProgress;
 module.exports.enumStatusAppointment = enumStatusAppointment;
-module.exports.enumTransation = enumTransation;
+module.exports.enumTransaction = enumTransaction;
 module.exports.TransactionType = TransactionType;

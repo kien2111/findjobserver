@@ -28,4 +28,5 @@ router.post('/acceptallrequestupgradeprofile',adminController.acceptAllRequestUp
 router.get('/fetchlastestrevenuepermonth',adminController.fetchLastestRevenuePerMonth);
 router.get('/fetchlastestrevenueperyear',adminController.fetchLastestRevenuePerYear);
 router.get('/fetchlastestrevenueperday',adminController.fetchLastestFiveDayRevenue);
+router.get('/:option/fetchrevenue',adminController.fetchRevenue);
 module.exports = router;

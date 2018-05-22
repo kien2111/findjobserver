@@ -1,6 +1,6 @@
 var {RoleModel} = require('./roleModel');
 var {bookshelf} = require('../db/dbconnect');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,

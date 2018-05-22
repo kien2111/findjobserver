@@ -163,3 +163,45 @@ exports.fetchLastestFiveDayRevenue = function(req,res){
             res.status(403).json({message:err.message,data:null});
         })
 }
+exports.fetchRevenue = function(req,res){
+    /**
+     * datestart
+     * dateend
+     * option 
+     */
+    switch(req.params.option){
+        case 0:
+            TransactionModel.fetchRevenuePerDay(req.query.datestart,req.query.dateend).tap(console.log)
+                .then(result=>{
+                    res.status(200).json({message:"fetch revenue ok",data:result[0]})
+                })
+                .catch(err=>{
+                    console.log(err);
+                    res.status(403).json({message:err.message,data:null});
+                });
+            break;
+        case 1:
+            TransactionModel.fetchRevenuePerMonth(req.query.datestart,req.query.dateend).tap(console.log)
+                .then(result=>{
+                    res.status(200).json({message:"fetch revenue ok",data:result[0]})
+                })
+                .catch(err=>{
+                    console.log(err);
+                    res.status(403).json({message:err.message,data:null});
+                });
+            break;
+        case 2:
+            TransactionModel.fetchRevenuePerYear(req.query.datestart,req.query.dateend).tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"fetch revenue ok",data:result[0]})
+            })
+            .catch(err=>{
+                console.log(err);
+                res.status(403).json({message:err.message,data:null});
+            });
+            break;
+        default:break;
+    }
+    
+    
+}

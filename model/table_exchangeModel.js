@@ -1,7 +1,7 @@
 var {bookshelf} = require('../db/dbconnect');
 var {CreditModel} = require('./creditModel');
 var Promise = require('bluebird');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,

@@ -98,7 +98,7 @@ exports.fetchDetaiProfileWithId = function(req,res){
             .catch(console.log);
 }
 exports.getProfile = function(req,res){
-    
+    console.log(req.query);
     ProfileModel.getprofile(req.query)
     //.then(console.log)
     .then(result=>{
@@ -106,7 +106,6 @@ exports.getProfile = function(req,res){
         res.status(200).json({message:"OK",data:{
             query:req.query.idcategory,
             totalcount:pagination.rowCount,
-            filter:req.query.filter,
             nextpage:req.query.page>=pagination.pageCount?-1:pagination.page+1,
             profiles:result.toJSON().map(element=>{
                 const {user,account} = {user:element.user,account:element.user.account};

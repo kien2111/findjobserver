@@ -1,7 +1,7 @@
 var {bookshelf} = require('../db/dbconnect');
 var {UserModel} = require('./userModel');
 var _ = require('lodash');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,

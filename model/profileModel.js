@@ -1,7 +1,7 @@
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
 var Promise = require('bluebird');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,
@@ -33,7 +33,7 @@ var ProfileModel = bookshelf.Model.extend({
         return this.hasOne('DistrictModel','distid','distid');
     }
 },{
-    getprofile:Promise.method(function({idcategory,page,filter}){
+    getprofile:Promise.method(function({idcategory,page,distid,cityid,salaryFrom,salaryTo,level}){
         //return this.forge({category:idcategory}).fetch({withRelated:['user']})
         return this.forge().query(function(db){
             db.innerJoin('users','users.iduser','profiles.idprofile');
@@ -41,11 +41,32 @@ var ProfileModel = bookshelf.Model.extend({
             db.leftJoin('districts','districts.distid','profiles.distid');
             db.where('profiles.category','=',idcategory);
             db.orderBy('profiles.level');
-            if(filter){
-                db.andWhere(function(){
-                    this.where('cities.namecity','=',filter);
-                    this.orWhere('districts.namedist','=',filter);
-                });
+            if(cityid && cityid!="All"){
+                this.andWhere('cities.cityid','=',cityid);
+            }
+            if(distid && distid!="All"){
+                this.andWhere('districts.distid','=',distid);
+            }
+            if((salaryFrom && salaryTo) &&(salaryFrom!=0.0 || salaryTo!=0.0)){
+                if(salaryFrom>salaryTo){
+                    db.andWhere(function(){
+                        this.where('profiles.salary_expected_from','<=',salaryTo*10000000);
+                        this.andWhere('profiles.salary_expected_to','>=',salaryFrom*10000000);
+                    });
+                }else{
+                    db.andWhere(function(){
+                        this.where('profiles.salary_expected_from','<=',salaryFrom*10000000);
+                        this.andWhere('profiles.salary_expected_to','>=',salaryTo*10000000);
+                    });
+                }
+            }
+            if(level){
+                if(level==4){
+                    //means that all
+                }else{
+                    db.andWhere('profiles.level','=',level);
+                }
+
             }
         })
         .fetchPage({
@@ -85,7 +106,7 @@ var ProfileModel = bookshelf.Model.extend({
             return ProfileModel.forge().where({idprofile:profile_id})
         .fetch({withRelated:['user'],transacting:trx})
         .tap(profile=>{
-            return Pakage_UpdateModel.forge().where({level_expected:level_expected,idpakage:idpakage})
+            return Pakage_UpdateModel.forge().where({idpakage_update:idpakage})
             .fetch({transacting:trx})
             .tap(pakage=>{
                 return Request_Update_ProfileModel.forge().query(db=>{
@@ -109,7 +130,7 @@ var ProfileModel = bookshelf.Model.extend({
                                     purpose:"Nâng cấp tài khoản",
                                     user_give:profile_id,
                                     amount_of_coin:pakage.get('pakage_fee'),
-                                    status:enumTransation.ON_PROGRESS,
+                                    status:enumTransaction.ON_PROGRESS,
                                     transaction_type:TransactionType.Upgrade_Profile,
                                 },trx)
                             ])

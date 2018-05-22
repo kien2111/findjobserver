@@ -1,5 +1,5 @@
 var { CategoryModel } = require('../model/categoryModel');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,
@@ -142,11 +142,24 @@ var UserModel = bookshelf.Model.extend({
         .where(bookshelf.knex.raw('iduser = ?',iduser))
         .first(); */
     }),
+    updateBalance:Promise.method(function(iduser,value,trx){
+        let self = this;
+        return self.forge({account_balance:value})
+                    .where({iduser:iduser})
+                    .fetch({require:true,transacting:trx})
+                    .tap(result=>{
+                        return self.forge({account_balance:result.get('account_balance')+value})
+                                .where({iduser:iduser})
+                                .save(null,{method:"update",transacting:trx});
+                    });
+    }),
     updateProfile:Promise.method(function(user){
+        console.log(user);
         let self = this;
         let dataupdate = _.omit(user,['profile','role_list']);
         let category = _.omit(user.profile.category,['num_profile']);
-        let profile = _.omit(user.profile,['category']);
+        let profile = _.omit(user.profile,['category','district']);
+        let district = user.profile.district;
         dataupdate.birthday = new Date(dataupdate.birthday);
         return bookshelf.transaction(function(trx){
             return self.forge(dataupdate)
@@ -155,13 +168,20 @@ var UserModel = bookshelf.Model.extend({
                     .tap(userresult=>{
                         return ProfileModel.forge(profile)
                         .where({idprofile:profile.idprofile})
-                        .save(null,{method:'update',transacting:trx});
+                        .save(null,{method:'update',transacting:trx})
+                        .tap(profileresult=>{
+                            return CategoryModel.forge(category)
+                            .where({idcategory:category.idcategory})
+                            .save(null,{method:'update',transacting:trx})
+                            .tap(result=>{
+                                return ProfileModel.forge({cityid:district.cityid,distid:district.distid})
+                                    .where({idprofile:user.iduser})
+                                    .save(null,{method:'update',transacting:trx});
+                            });
+                        });
                     })
-                    .tap(profileresult=>{
-                        return CategoryModel.forge(category)
-                        .where({idcategory:category.idcategory})
-                        .save(null,{method:'update',transacting:trx});
-                    });
+                    
+                    
         })
     }),
     fetchRemoteUserData:Promise.method(function({iduser}){
