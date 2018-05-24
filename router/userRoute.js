@@ -17,9 +17,7 @@ router.get('/getdetailprofile',controller.getdetailprofile);
 router.get('/getaveragedetail',controller.getAverageRateProfile);
 router.post('/Login',controller.Login);
 router.post('/SignUp',controller.SignUp);
-router.get('/Test',(req,res)=>{
-    res.status(511).json({message:"error",code:512,handle:"vzxc"});
-})
+router.get('/Test',controller.loginRequired,controller.isUserBlocked);
 router.put('/updateprofile',upload.fields([{name:'avatar',maxCount:1},{name:'logo',maxCount:1}]),controller.updateProfile);
 router.put('/updateprofilewithoutimage',controller.updateProfileWithoutImage);
 router.get('/fetchtableexchange',controller.fetchTableExchange);

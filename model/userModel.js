@@ -3,6 +3,8 @@ var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,
+    statusRoleActive,
+    enumRole,
     enumStatusAppointment} = require('../model/globalconstant');
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
@@ -228,12 +230,9 @@ var UserModel = bookshelf.Model.extend({
             db.innerJoin('accounts_roles','users.iduser','accounts_roles.iduser');
             db.where('status','=',status);
         }).fetchAll();
-    }),
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-
+    }),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     //block user
     blockuser:Promise.method(function(arr){
-        console.log(arr);
         if(!arr) throw new Error("Pls provide data to signup");
         if(!Array.isArray(arr))throw new Error("Param provide not an array");
         return bookshelf.transaction(trx=>{
@@ -243,6 +242,18 @@ var UserModel = bookshelf.Model.extend({
                 .save(item,{method:"update",transacting:trx,patch:true});
             });
         })
+    }),
+    isUserBlocked:Promise.method(function(accountverifyfromtoken){
+        return this.forge()
+            .where({iduser:accountverifyfromtoken.iduser})
+            .fetch({require:true}).tap(result=>{
+                return Account_RoleModel.forge()
+                    .where({iduser:accountverifyfromtoken.iduser,idrole:enumRole.User,status:statusRoleActive.Active})
+                    .fetch()
+                    .tap(accountroleresult=>{
+                        if(!accountroleresult)throw new Error("Your account have been blocked");
+                    });
+            });
     }),
 })
 const JoiUserSchema = Joi.object().keys({

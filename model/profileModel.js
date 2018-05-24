@@ -40,7 +40,8 @@ var ProfileModel = bookshelf.Model.extend({
             db.leftJoin('cities','cities.cityid','profiles.cityid');
             db.leftJoin('districts','districts.distid','profiles.distid');
             db.where('profiles.category','=',idcategory);
-            db.orderBy('profiles.level');
+            db.andWhere('profiles.approve_publish','=',Approve_Publish.ACCEPT);
+            db.orderBy('profiles.level','DESC');
             if(cityid && cityid!="All"){
                 this.andWhere('cities.cityid','=',cityid);
             }
@@ -73,9 +74,6 @@ var ProfileModel = bookshelf.Model.extend({
             pageSize:5,
             page:page?page:1,
             withRelated:['category','user.user_receive_rate','district','city']
-        }).tap(result=>{
-            //console.log(result.toJSON()[0].user);
-            //result.set('rate_point',calculateAverage(result.toJSON().user_receive_rate));
         })
     }),
     fetchDetaiProfileWithId:Promise.method(function(idprofile){
@@ -216,14 +214,11 @@ var Level = {
     MEDIUM:2,
     PREMIUM:3,
 }
-const calculateAverage = (arrayobj)=>{
-    if(!arrayobj || arrayobj.length<=0)return 0;
-    let result=0;
-
-    arrayobj.forEach(element => {
-        result +=element.average_point;
-    });
-    return result/arrayobj.length;
+var Approve_Publish = {
+    NOT_DO_ANYTHING:0,
+    ACCEPT:1,
+    CONFLICT:2,
+    ADMIN_BLOCKED:3,
 }
 module.exports.ProfileModel = bookshelf.model('ProfileModel',ProfileModel);
 module.exports.ProfileCollection = bookshelf.collection('ProfileCollection',Profiles);

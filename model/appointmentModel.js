@@ -85,7 +85,6 @@ var AppointmentModel = bookshelf.Model.extend({
                 .tap(userresult=>{
                 if(!userresult)throw new Error("Không tìm thấy thông tin tài khoản của bạn");
                 return Deposit_FeeModel.getAvailableDepositFeeWithTransaction(trx).tap(depositresult=>{
-                    console.log(depositresult.toJSON());
                     if(userresult.get('account_balance')<depositresult.get('fee'))throw new Error("Không đủ tiền trong tài khoản để thực hiện yêu cầu");
                     let transaction = {
                         amount_of_coin:depositresult.get('fee'),
@@ -95,9 +94,9 @@ var AppointmentModel = bookshelf.Model.extend({
                         status:enumTransaction.ON_PROGRESS,
                         transaction_type:TransactionType.Booking_Appointment,
                     };
-                    return self.forge(saveddata).save(null,{transacting:trx}).tap(result=>{
-                        return TransactionModel.insertTransaction(transaction,trx);
-                    })
+                    return TransactionModel.insertTransaction(transaction,trx).tap(result=>{
+                        return self.forge(saveddata).save({idtransaction:result.get('idtransaction')},{transacting:trx})
+                    });
                 })
             })
         });

@@ -31,6 +31,16 @@ const TransactionType ={
     Trade:3,
     Booking_Appointment:4
 }
+const enumRole = {
+    User:0,
+    Admin:1,
+}
+const statusRoleActive = {
+    Active:1,
+    Blocked:0,
+}
+module.exports.statusRoleActive = statusRoleActive;
+module.exports.enumRole = enumRole;
 module.exports.Approve_Upgrade_Profile = Approve_Upgrade_Profile;
 module.exports.enumStatus = enumStatus;
 module.exports.enumhistoryOrOnProgress = enumhistoryOrOnProgress;

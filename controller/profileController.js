@@ -100,14 +100,17 @@ exports.fetchDetaiProfileWithId = function(req,res){
 exports.getProfile = function(req,res){
     console.log(req.query);
     ProfileModel.getprofile(req.query)
+    .tap(console.log)
     //.then(console.log)
     .then(result=>{
         let pagination = result.pagination;
+        console.log(result.toJSON());
         res.status(200).json({message:"OK",data:{
             query:req.query.idcategory,
             totalcount:pagination.rowCount,
             nextpage:req.query.page>=pagination.pageCount?-1:pagination.page+1,
             profiles:result.toJSON().map(element=>{
+                element.rating = calculateAverage(element.user.user_receive_rate);
                 const {user,account} = {user:element.user,account:element.user.account};
                 return clean(Object.assign(_.omit(element,['user','account']),_.omit(user,['account']),account));
             }),
@@ -212,4 +215,13 @@ exports.blockprofile = function(req,res){
         }
     }
     catch(error){}
+}
+const calculateAverage = (arrayobj)=>{
+    if(!arrayobj || arrayobj.length<=0)return 0;
+    let result=0;
+
+    arrayobj.forEach(element => {
+        result +=element.average_point;
+    });
+    return result/arrayobj.length;
 }
