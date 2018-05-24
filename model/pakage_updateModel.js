@@ -1,5 +1,12 @@
 var {bookshelf} = require('../db/dbconnect');
 var {UserModel} = require('./userModel');
+var _ = require('lodash');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
+var Promise = require('bluebird');
 var {Request_Update_ProfileModel} = require('./request_update_profileModel');
 var Pakage_UpdateModel = bookshelf.Model.extend({
     tableName:"pakage_update",
@@ -7,6 +14,10 @@ var Pakage_UpdateModel = bookshelf.Model.extend({
     request_update_profile:function(){
         return this.hasMany('Request_Update_ProfileModel','idpakage','idpakage_update');
     }
+},{
+    getListPakageUpgrade:Promise.method(function(){
+        return this.forge().fetchAll();
+    })
 });
 var Pakage_Updates = bookshelf.Collection.extend({
     model:Pakage_UpdateModel,

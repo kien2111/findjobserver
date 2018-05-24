@@ -7,8 +7,8 @@ var CriteriaModel = bookshelf.Model.extend({
         return this.hasMany('Criteria_RateModel','criteria_id','idcriteria');
     },
 });
-var Criterias = bookshelf.Model.extend({
+var Criterias = bookshelf.Collection.extend({
     model:CriteriaModel,
 });
 module.exports.CriteriaModel = bookshelf.model('CriteriaModel',CriteriaModel);
-module.exports.CriteriaCollection = bookshelf.collection('Criterias',Criterias);
+module.exports.CriteriaCollection = bookshelf.collection('CriteriaCollection',Criterias);

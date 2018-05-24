@@ -30,4 +30,8 @@ router.get('/getallappointment',appointmentController.fetchAllWaitAppointment);
 router.post('/acceptAppointment',appointmentController.acceptAppointment)
 router.post('/skipAppointment',appointmentController.skipAppointment)
 router.get('/getallupgradeaccount',adminController.getAllUpgradeAccount)
+router.post('/acceptallrequestupgradeprofile',adminController.acceptAllRequestUpgrade);
+router.get('/fetchlastestrevenuepermonth',adminController.fetchLastestRevenuePerMonth);
+router.get('/fetchlastestrevenueperyear',adminController.fetchLastestRevenuePerYear);
+router.get('/fetchlastestrevenueperday',adminController.fetchLastestFiveDayRevenue);
 module.exports = router;

@@ -9,7 +9,10 @@ const routeApi =function(req,res,next){
     }
 }
 router.get('/:option/getlistappointment',routeApi);
-
+router.get('/getdepositfee',controller.getAvailableDepositFee);
+router.post('/bookingappointment',controller.bookingAppointment);
+router.put('/acceptappointment',controller.acceptAppointment);
+router.put('/declineappointment',controller.declineAppointment);
 
 const chooseOption = function(option,req,res){
     if(defineOption.freelancer.compareOption(option)){
@@ -26,7 +29,7 @@ const defineOption ={
             return this.option==option;
         },
         getHandleFunction(req,res){
-            return controller.fetchOnProgressFreelancerAppointment(req,res);
+            return controller.fetchFreelancerAppointment(req,res);
         }
     },
     employer:{
@@ -35,7 +38,7 @@ const defineOption ={
             return this.option==option;
         },
         getHandleFunction(req,res){
-            return controller.fetchOnProgressEmployerAppointment(req,res);
+            return controller.fetchOnEmployerAppointment(req,res);
         }
     }
 }

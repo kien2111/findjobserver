@@ -1,4 +1,9 @@
 var {bookshelf} = require('../db/dbconnect');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var IncomeModel = bookshelf.Model.extend({
     tableName:"incomes",
     idAttribute:'idincome',

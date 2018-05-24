@@ -22,3 +22,7 @@ router.get('/Test',(req,res)=>{
 })
 router.put('/updateprofile',upload.fields([{name:'avatar',maxCount:1},{name:'logo',maxCount:1}]),controller.updateProfile);
 router.put('/updateprofilewithoutimage',controller.updateProfileWithoutImage);
+router.get('/fetchtableexchange',controller.fetchTableExchange);
+router.get('/syncdata',controller.SyncData);
+router.get('/fetchremoteuserdata',controller.fetchRemoteUserData);
+router.put('/topupmoney',controller.topUpMoney);

@@ -2,6 +2,8 @@ var {UserModel} = require('../model/userModel');
 var {RoleModel} = require('../model/account_roleModel');
 var {IncomeModel} = require('../model/incomeModel');
 var {Request_Update_ProfileModel} =require('../model/request_update_profileModel');
+var {ProfileModel} = require('../model/profileModel');
+var {TransactionModel} = require('../model/transactionModel');
 exports.getAllUser = function (req,res){
     UserModel.fetchAll().then(function(model){
         res.status(200).json({message:"fetch OK",data:model.toJSON()});
@@ -151,4 +153,44 @@ exports.getAllUpgradeAccount = function(req,res){
         res.status(404).json({message:`${err}`,data:null});
     });
 
+}
+
+exports.acceptAllRequestUpgrade = function(req,res){
+    ProfileModel.adminAcceptProfileUpgrade(req.body).tap(console.log).then(result=>{
+        res.status(200).json({message:"accept request OK",data:null});
+    })
+    .catch(err=>{
+        console.log(err);
+        res.status(403).json({message:err.message,data:null});
+    })
+}
+exports.fetchLastestRevenuePerMonth = function(req,res){
+    TransactionModel.fetchLastestRevenuePerMonth().tap(console.log)
+        .then(result=>{
+            res.status(200).json({message:"accept request OK",data:result[0][0]});
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(403).json({message:err.message,data:null});
+        })
+}
+exports.fetchLastestRevenuePerYear = function(req,res){
+    TransactionModel.fetchLastestRevenuePerYear().tap(console.log)
+        .then(result=>{
+            res.status(200).json({message:"accept request OK",data:result[0][0]});
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(403).json({message:err.message,data:null});
+        })
+}
+exports.fetchLastestFiveDayRevenue = function(req,res){
+    TransactionModel.fetchLastestFiveDayRevenue().tap(console.log)
+        .then(result=>{
+            res.status(200).json({message:"accept request OK",data:result[0][0]});
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(403).json({message:err.message,data:null});
+        })
 }

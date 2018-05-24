@@ -1,5 +1,9 @@
 var { CategoryModel } = require('../model/categoryModel');
-
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
 var Promise = require('bluebird');
@@ -11,6 +15,7 @@ var {TransactionModel} = require('../model/transactionModel');
 var {AppointmentModel} = require('../model/appointmentModel');
 var {Account_RoleModel} = require('../model/account_roleModel');
 var {ProfileModel} = require('../model/profileModel');
+var {RateModel} = require('../model/rateModel');
 var UserModel = bookshelf.Model.extend({
     tableName:"users",
     idAttribute:'iduser',
@@ -77,11 +82,11 @@ var UserModel = bookshelf.Model.extend({
     login:Promise.method(function({username,password}){
         if(!password || !username)throw new Error('Email or Username and password are required');
         return this.forge({username:username})
-        .fetch({require:true,withRelated:['accounts_roles.role','profile.category']})
+        .fetch({require:true,withRelated:['accounts_roles.role','profile.category','user_receive_rate']})
         .tap(account=>{
-            console.log(account.toJSON().profile);
+            console.log(account.toJSON());
             return bcrypt.compareAsync(password,account.get('password'))
-            .then(res=>{
+            .tap(res=>{
                 if(!res) throw new Error('Invalid Password');
                 let result = account.toJSON().accounts_roles
                 account.role_list = result.map(account.processResponse);
@@ -89,7 +94,22 @@ var UserModel = bookshelf.Model.extend({
                 account.set('role_list',account.role_list);
                 account.set('profile',account.toJSON().profile);
                 account.set('access_token',jwt.sign(account.toJSON(),process.env.SECRET_KEY));
+                account.set('rate_point',calculateAverage(account.toJSON().user_receive_rate));
             });
+        })
+    }),
+    syncdata:Promise.method(function({iduser}){
+        console.log(iduser);
+        return this.forge({iduser:iduser})
+        .fetch({require:true,withRelated:['accounts_roles.role','profile.category','user_receive_rate']})
+        .tap(account=>{
+            let result = account.toJSON().accounts_roles
+                account.role_list = result.map(account.processResponse);
+                if(!account.role_list.find(account.checkrole))throw new Error("The account have been blocked");
+                account.set('role_list',account.role_list);
+                account.set('profile',account.toJSON().profile);
+                account.set('access_token',jwt.sign(account.toJSON(),process.env.SECRET_KEY));
+                account.set('rate_point',calculateAverage(account.toJSON().user_receive_rate));
         })
     }),
     signup:Promise.method(function(obj){
@@ -110,10 +130,16 @@ var UserModel = bookshelf.Model.extend({
         });
     }),
     getdetailprofile:Promise.method(function({iduser}){
-        return bookshelf.knex.select('*',bookshelf.knex.raw("(select AVG(average_point) from rates as r where r.user_who_receive_this_rate = u.iduser)  as point"))
+        return this.forge({iduser:iduser})
+        .fetch({require:true,withRelated:['profile.category','user_receive_rate','profile.city','profile.district']})
+        .tap(account=>{
+                account.set('profile',account.toJSON().profile);
+                account.set('rate_point',calculateAverage(account.toJSON().user_receive_rate));
+        })
+        /* return bookshelf.knex.select('*',bookshelf.knex.raw("(select AVG(average_point) from rates as r where r.user_who_receive_this_rate = u.iduser)  as point"))
         .from('users as u')
         .where(bookshelf.knex.raw('iduser = ?',iduser))
-        .first();
+        .first(); */
     }),
     updateProfile:Promise.method(function(user){
         let self = this;
@@ -136,6 +162,9 @@ var UserModel = bookshelf.Model.extend({
                         .save(null,{method:'update',transacting:trx});
                     });
         })
+    }),
+    fetchRemoteUserData:Promise.method(function({iduser}){
+        return this.forge().where({iduser:iduser}).fetch({withRelated:['profile'],require:true});
     }),
     sigupadmin:Promise.method(function(obj){
         let role = obj.role;
@@ -216,5 +245,14 @@ const JoiUserSchema = Joi.object().keys({
 var Users = bookshelf.Collection.extend({
     model:UserModel
 })
+const calculateAverage = (arrayobj)=>{
+    if(!arrayobj || arrayobj.length<=0)return 0;
+    let result=0;
+
+    arrayobj.forEach(element => {
+        result +=element.average_point;
+    });
+    return result/arrayobj.length;
+}
 module.exports.UserModel = bookshelf.model('UserModel',UserModel);
 module.exports.UserCollection = bookshelf.collection('UserCollection',Users);

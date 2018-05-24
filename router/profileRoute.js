@@ -9,4 +9,10 @@ router.use((req,res,next)=>{
 
 router.get('/getprofile',controller.getProfile);
 router.get('/search',controller.search);
+router.put('/dotaskpublishprofile',controller.doTaskPublishProfile);
+router.post('/upgradeprofile',controller.doTaskUpgradeProfile);
+router.get('/getallpakageupgrade',controller.getListPakageUpgrade);
+router.get('/getlastestrequestupgrade',controller.getLastestProcessRequest);
+router.get('/fetchdetaiprofilewithid',controller.fetchDetaiProfileWithId);
+router.delete('/deletelastestupgraderequest',controller.deleteLastestUpgradeRequest);
 module.exports = router;

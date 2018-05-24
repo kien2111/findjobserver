@@ -1,6 +1,11 @@
 var {bookshelf} = require('../db/dbconnect');
 var Joi = require('joi');
 var {Criteria_RateModel,Criteria_RateCollection} = require('./criteria_rateModel');
+var {enumTransation,
+    Approve_Upgrade_Profile,
+    enumhistoryOrOnProgress,
+    enumStatus,
+    enumStatusAppointment} = require('../model/globalconstant');
 require('./userModel').UserModel;
 var Promise = require('bluebird');
 var RateModel = bookshelf.Model.extend({
@@ -21,10 +26,10 @@ var RateModel = bookshelf.Model.extend({
         return this.hasOne('UserModel','iduser','user_who_rate_this');
     },
     user_take_rate:function(){
-        return this.belongsTo('UserModel','iduser','user_who_receive_this_rate');
+        return this.hasOne('UserModel','iduser','user_who_receive_this_rate');
     }
 },{
-    dorate:Promise.method(function({rateobj,arr_rate_criterias}){
+    doRate:Promise.method(function(raterequest){
         /**
          * "rateobj":{
 		"idrate":1,
@@ -47,17 +52,13 @@ var RateModel = bookshelf.Model.extend({
 		}
 	]
          */
-        console.log(rateobj);
         return bookshelf.transaction(trx=>{
-            return this.forge(rateobj).save(null,{method:'insert',transacting:trx}).tap(rate=>{
-                return Promise.all(Criteria_RateCollection.forge(arr_rate_criterias).invokeMap('save'))
-            })
+            return this.forge(raterequest).save(null,{method:'insert',transacting:trx});
         })
     }),
     getListRate:Promise.method(function({iduser,page}){
         return this.forge().query(function(db){
             db.innerJoin('users','users.iduser','rates.user_who_rate_this');
-            db.groupBy('rates.idrate');
             db.where('rates.user_who_receive_this_rate','=',iduser);
         })
         .orderBy('rates.idrate','DESC')

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ::ffff:127.0.0.1 - - [25/Apr/2018:17:02:49 +0000] "PUT /Users/updateprofilewithoutimage HTTP/1.1" 500 2118 "-" "okhttp/3.9.1"
 ::ffff:127.0.0.1 - - [25/Apr/2018:17:02:55 +0000] "GET /Categories/GetAllCategories HTTP/1.1" 304 - "-" "okhttp/3.9.1"
 ::ffff:127.0.0.1 - - [25/Apr/2018:17:03:11 +0000] "PUT /Users/updateprofilewithoutimage HTTP/1.1" 500 2118 "-" "okhttp/3.9.1"
@@ -794,3 +795,21 @@
 ::ffff:127.0.0.1 - - [21/May/2018:07:43:22 +0000] "GET /Admins/getallupgradeaccount HTTP/1.1" 304 - "-" "okhttp/3.9.1"
 ::ffff:127.0.0.1 - - [21/May/2018:07:43:32 +0000] "GET /Admins/getallappointment HTTP/1.1" 200 966 "-" "okhttp/3.9.1"
 ::ffff:127.0.0.1 - - [21/May/2018:07:43:38 +0000] "GET /Admins/getallstatisfy HTTP/1.1" 304 - "-" "okhttp/3.9.1"
+=======
+::1 - - [15/May/2018:10:25:32 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 500 2188 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:25:32 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:28:37 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 200 2449 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:33:13 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 403 1306 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:41:00 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 403 1346 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:41:25 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 403 1343 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:41:35 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 200 2449 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:46:27 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 200 161 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:49:49 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:51:01 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:10:51:38 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 200 159 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:11:29:10 +0000] "GET /Admins/fetchlastestrevenue HTTP/1.1" 404 165 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:11:29:24 +0000] "GET /Admins/fetchlastestrevenuepermonth HTTP/1.1" 200 159 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:11:40:00 +0000] "GET /Admins/fetchlastestrevenueperyear HTTP/1.1" 200 82 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+::1 - - [15/May/2018:11:57:17 +0000] "GET /Admins/fetchlastestrevenueperday HTTP/1.1" 200 82 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+>>>>>>> c6c457bdf2863850c6e6919af507e6c6f6a4b15d
+::ffff:127.0.0.1 - - [22/May/2018:01:29:16 +0000] "GET /Admins/getallstatisfy HTTP/1.1" 304 - "-" "okhttp/3.9.1"
