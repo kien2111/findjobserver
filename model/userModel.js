@@ -1,8 +1,10 @@
 var { CategoryModel } = require('../model/categoryModel');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,
+    statusRoleActive,
+    enumRole,
     enumStatusAppointment} = require('../model/globalconstant');
 var {bookshelf} = require('../db/dbconnect');
 var _ = require('lodash');
@@ -141,11 +143,24 @@ var UserModel = bookshelf.Model.extend({
         .where(bookshelf.knex.raw('iduser = ?',iduser))
         .first(); */
     }),
+    updateBalance:Promise.method(function(iduser,value,trx){
+        let self = this;
+        return self.forge({account_balance:value})
+                    .where({iduser:iduser})
+                    .fetch({require:true,transacting:trx})
+                    .tap(result=>{
+                        return self.forge({account_balance:result.get('account_balance')+value})
+                                .where({iduser:iduser})
+                                .save(null,{method:"update",transacting:trx});
+                    });
+    }),
     updateProfile:Promise.method(function(user){
+        console.log(user);
         let self = this;
         let dataupdate = _.omit(user,['profile','role_list']);
         let category = _.omit(user.profile.category,['num_profile']);
-        let profile = _.omit(user.profile,['category']);
+        let profile = _.omit(user.profile,['category','district']);
+        let district = user.profile.district;
         dataupdate.birthday = new Date(dataupdate.birthday);
         return bookshelf.transaction(function(trx){
             return self.forge(dataupdate)
@@ -154,13 +169,20 @@ var UserModel = bookshelf.Model.extend({
                     .tap(userresult=>{
                         return ProfileModel.forge(profile)
                         .where({idprofile:profile.idprofile})
-                        .save(null,{method:'update',transacting:trx});
+                        .save(null,{method:'update',transacting:trx})
+                        .tap(profileresult=>{
+                            return CategoryModel.forge(category)
+                            .where({idcategory:category.idcategory})
+                            .save(null,{method:'update',transacting:trx})
+                            .tap(result=>{
+                                return ProfileModel.forge({cityid:district.cityid,distid:district.distid})
+                                    .where({idprofile:user.iduser})
+                                    .save(null,{method:'update',transacting:trx});
+                            });
+                        });
                     })
-                    .tap(profileresult=>{
-                        return CategoryModel.forge(category)
-                        .where({idcategory:category.idcategory})
-                        .save(null,{method:'update',transacting:trx});
-                    });
+                    
+                    
         })
     }),
     fetchRemoteUserData:Promise.method(function({iduser}){
@@ -205,10 +227,9 @@ var UserModel = bookshelf.Model.extend({
             db.innerJoin('accounts_roles','users.iduser','accounts_roles.iduser');
             db.where('status','=',status);
         }).fetchAll();
-    }),
+    }),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
     //block user
     blockuser:Promise.method(function(arr){
-        console.log(arr);
         if(!arr) throw new Error("Pls provide data to signup");
         if(!Array.isArray(arr))throw new Error("Param provide not an array");
         return bookshelf.transaction(trx=>{
@@ -218,6 +239,18 @@ var UserModel = bookshelf.Model.extend({
                 .save(item,{method:"update",transacting:trx,patch:true});
             });
         })
+    }),
+    isUserBlocked:Promise.method(function(accountverifyfromtoken){
+        return this.forge()
+            .where({iduser:accountverifyfromtoken.iduser})
+            .fetch({require:true}).tap(result=>{
+                return Account_RoleModel.forge()
+                    .where({iduser:accountverifyfromtoken.iduser,idrole:enumRole.User,status:statusRoleActive.Active})
+                    .fetch()
+                    .tap(accountroleresult=>{
+                        if(!accountroleresult)throw new Error("Your account have been blocked");
+                    });
+            });
     }),
 })
 const JoiUserSchema = Joi.object().keys({

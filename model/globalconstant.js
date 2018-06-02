@@ -1,4 +1,4 @@
-const enumTransation ={
+const enumTransaction ={
     ON_PROGRESS:0,
     SUCCESS:1,
     FAIL:2,
@@ -31,9 +31,19 @@ const TransactionType ={
     Trade:3,
     Booking_Appointment:4
 }
+const enumRole = {
+    User:0,
+    Admin:1,
+}
+const statusRoleActive = {
+    Active:1,
+    Blocked:0,
+}
+module.exports.statusRoleActive = statusRoleActive;
+module.exports.enumRole = enumRole;
 module.exports.Approve_Upgrade_Profile = Approve_Upgrade_Profile;
 module.exports.enumStatus = enumStatus;
 module.exports.enumhistoryOrOnProgress = enumhistoryOrOnProgress;
 module.exports.enumStatusAppointment = enumStatusAppointment;
-module.exports.enumTransation = enumTransation;
+module.exports.enumTransaction = enumTransaction;
 module.exports.TransactionType = TransactionType;

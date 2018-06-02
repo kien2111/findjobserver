@@ -1,7 +1,7 @@
 var {Table_ExchangeModel} = require('./table_exchangeModel');
 var {bookshelf} = require('../db/dbconnect');
 var {UserModel} = require('./userModel');
-var {enumTransation,
+var {enumTransaction,
     Approve_Upgrade_Profile,
     enumhistoryOrOnProgress,
     enumStatus,
@@ -38,7 +38,7 @@ var CreditModel = bookshelf.Model.extend({
                                         purpose:"Nạp tiền",
                                         user_give:iduser,
                                         amount_of_coin:pakage.get('pakage_fee'),
-                                        status:enumTransation.ON_PROGRESS,
+                                        status:enumTransaction.ON_PROGRESS,
                                         transaction_type:TransactionType.TopUp_Money,
                                     },trx)
                                 ])

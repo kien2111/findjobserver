@@ -39,11 +39,24 @@ exports.getAverageRateProfile = (req,res)=>{
     .catch(err=>res.status(304).json({message:"there is something wrong",data:null}));
 }
 exports.loginRequired=function(req,res,next){
+    console.log(req.user);
     if(req.user){
         next();
     }else{
         return res.status(401).json({message:`Unauthorized user`,data:null});
     }
+}
+exports.isUserBlocked = function(req,res,next){
+    UserModel.isUserBlocked(req.user)
+        .tap(result=>{
+            next();
+        })
+        .catch(UserModel.NotFoundError,err=>{
+            res.status(404).json({message:"Can't verify user data",data:null});
+        })
+        .catch(err=>{
+            res.status(401).json({message:err.message,data:null});
+        });
 }
 exports.Login = function(req,res){
     console.log(req.body);

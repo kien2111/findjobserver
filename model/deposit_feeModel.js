@@ -13,6 +13,9 @@ var Deposit_FeeModel = bookshelf.Model.extend({
     getAvailableDepositFee:Promise.method(function(){
         return this.forge().where('apply','=','1').fetch({require:true});
     }),
+    getAvailableDepositFeeWithTransaction:Promise.method(function(trx){
+        return this.forge().where('apply','=','1').fetch({require:true,transacting:trx});
+    }),
 });
 var Deposit_Fees = bookshelf.Collection.extend({
     model:Deposit_FeeModel,

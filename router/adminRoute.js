@@ -27,11 +27,14 @@ router.post('/blockprofile',controller.blockprofile);
 router.post('/getuserblock',adminController.getAllUserBlock);
 router.get('/getallstatisfy',adminController.getAllStatisfy);
 router.get('/getallappointment',appointmentController.fetchAllWaitAppointment);
-router.post('/acceptAppointment',appointmentController.acceptAppointment)
+router.post('/acceptAppointment',appointmentController.acceptAppointmentAdmin)
 router.post('/skipAppointment',appointmentController.skipAppointment)
 router.get('/getallupgradeaccount',adminController.getAllUpgradeAccount)
 router.post('/acceptallrequestupgradeprofile',adminController.acceptAllRequestUpgrade);
 router.get('/fetchlastestrevenuepermonth',adminController.fetchLastestRevenuePerMonth);
 router.get('/fetchlastestrevenueperyear',adminController.fetchLastestRevenuePerYear);
 router.get('/fetchlastestrevenueperday',adminController.fetchLastestFiveDayRevenue);
+router.get('/:option/fetchrevenue',adminController.fetchRevenue);
+router.get('/getallonprogressrequest',adminController.getAllOnProgressRequest);
+router.post('/acceptupgradeprofile',adminController.acceptUpgradeProfile);
 module.exports = router;
