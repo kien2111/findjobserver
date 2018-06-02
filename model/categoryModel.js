@@ -10,12 +10,12 @@ var CategoryModel = bookshelf.Model.extend({
     tableName:"categories",
     idAttribute:'idcategory',
     profiles:function(){
-        return this.hasMany('ProfileModel','category','idcategory');
+        return this.hasMany('ProfileModel','idcategory','idcategory');
     },
 
 },{
     getAllCategories:Promise.method(function(){
-        return bookshelf.knex.select('*',bookshelf.knex.raw("(select count(*) from profiles as p where p.category = c.idcategory) as num_profile")).from('categories as c'); 
+        return bookshelf.knex.select('*',bookshelf.knex.raw("(select count(*) from profiles as p where p.idcategory = c.idcategory) as num_profile")).from('categories as c'); 
     }),
     searchCategory:Promise.method(function({query}){
         return this.forge({category_name:query})

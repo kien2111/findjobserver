@@ -194,7 +194,16 @@ exports.getAllProfile= function(req,res){
         res.status(404).json({message:"get error",data:null});
     });
 }
-
+exports.getMapProfile = function(req,res){
+    ProfileModel.getMapProfile(req.query.lat,req.query.long,req.query.level,req.query.distance,req.query.unit)
+        .tap(console.log)
+        .then(result=>{
+            res.status(200).json({message:"fetch OK",data:result[0]})
+        })
+        .catch(err=>{
+            res.status(403).json({message:err.message,data:null});
+        })
+}
 exports.blockprofile = function(req,res){
     try{
 

@@ -24,7 +24,7 @@ var ProfileModel = bookshelf.Model.extend({
         return this.hasMany('Request_Update_ProfileModel','profile_id','idprofile');
     },
     category:function(){
-        return this.hasOne('CategoryModel','idcategory','category');
+        return this.hasOne('CategoryModel','idcategory','idcategory');
     },
     city:function(){
         return this.hasOne('CityModel','cityid','cityid');
@@ -39,7 +39,7 @@ var ProfileModel = bookshelf.Model.extend({
             db.innerJoin('users','users.iduser','profiles.idprofile');
             db.leftJoin('cities','cities.cityid','profiles.cityid');
             db.leftJoin('districts','districts.distid','profiles.distid');
-            db.where('profiles.category','=',idcategory);
+            db.where('profiles.idcategory','=',idcategory);
             db.andWhere('profiles.approve_publish','=',Approve_Publish.ACCEPT);
             db.orderBy('profiles.level','DESC');
             if(cityid && cityid!="All"){
@@ -83,6 +83,27 @@ var ProfileModel = bookshelf.Model.extend({
                 withRelated:['category','user.user_receive_rate','district','city']
              });
     }),
+    getMapProfile:Promise.method(function(lat,long,priority,distance,unit){
+        console.log(mapUnit(unit));
+        if(!priority || priority==Level.ALL){
+            return bookshelf.knex.raw(`
+            select p.*,u.realname,u.avatar,(select avg(r.average_point) from rates as r where r.user_who_receive_this_rate = p.idprofile) as rate_point 
+            from profiles as p left join users as u on p.idprofile = u.iduser where ST_Distance_Sphere(
+                    point(${long},${lat}),
+                    point(p.long,p.lat) 
+                ) <${distance*mapUnit(unit)} LIMIT 50;
+            `) 
+        }else{
+            return bookshelf.knex.raw(`
+            select p.*,u.realname,u.avatar,(select avg(r.average_point) from rates as r where r.user_who_receive_this_rate = p.idprofile) as rate_point 
+            from profiles as p left join users as u on p.idprofile = u.iduser where ST_Distance_Sphere(
+                    point(${long},${lat}),
+                    point(p.long,p.lat) 
+                ) <${distance*mapUnit(unit)} and level = ${priority}  LIMIT 50;
+            `)
+        }
+        
+    }),
     searchProfile:Promise.method(function({query}){
         return this.forge().query(qb=>{
             qb.innerJoin('users','profiles.idprofile','users.iduser');
@@ -119,19 +140,20 @@ var ProfileModel = bookshelf.Model.extend({
                     if(!oldrequest){
                         // no old request in last one year till now
                         if(profile.toJSON().user.account_balance>=pakage.get('pakage_fee')){
-                            return Promise.all([Request_Update_ProfileModel.insertRequest({profile_id:profile_id,
-                                level_expected:level_expected,
-                                approve:Approve_Upgrade_Profile.ON_PROGRESS,
-                                idpakage:idpakage},
-                                trx),
-                                TransactionModel.insertTransaction({
-                                    purpose:"Nâng cấp tài khoản",
-                                    user_give:profile_id,
-                                    amount_of_coin:pakage.get('pakage_fee'),
-                                    status:enumTransaction.ON_PROGRESS,
-                                    transaction_type:TransactionType.Upgrade_Profile,
-                                },trx)
-                            ])
+                            return TransactionModel.insertTransaction({
+                                purpose:"Nâng cấp tài khoản",
+                                user_give:profile_id,
+                                amount_of_coin:pakage.get('pakage_fee'),
+                                status:enumTransaction.ON_PROGRESS,
+                                transaction_type:TransactionType.Upgrade_Profile,
+                            },trx).tap(transactionresult=>{
+                                return Request_Update_ProfileModel.insertRequest({profile_id:profile_id,
+                                    level_expected:level_expected,
+                                    approve:Approve_Upgrade_Profile.ON_PROGRESS,
+                                    idpakage:idpakage,
+                                    idtransaction:transactionresult.get('idtransaction')},
+                                    trx)
+                            })
                         }else{
                             throw new Error("Bạn không đủ tiền để nâng cấp tài khoản");
                         }
@@ -213,12 +235,34 @@ var Level = {
     BASIC:1,
     MEDIUM:2,
     PREMIUM:3,
+    ALL:4
 }
 var Approve_Publish = {
     NOT_DO_ANYTHING:0,
     ACCEPT:1,
     CONFLICT:2,
     ADMIN_BLOCKED:3,
+}
+var Unit = {
+    KM:0,
+    METER:1,
+    MILES:2,
+    FOOT:3,
+    CM:4,
+    YARDS:5
+}
+function mapUnit(unit){
+    switch(parseInt(unit)){
+        case Unit.KM:
+        console.log(unit);
+            return 1000;
+        case Unit.CM:
+            return 0.01;
+        case Unit.METER:
+            return 1;
+        case Unit.YARDS:break;
+        case Unit.MILES:break;
+    }
 }
 module.exports.ProfileModel = bookshelf.model('ProfileModel',ProfileModel);
 module.exports.ProfileCollection = bookshelf.collection('ProfileCollection',Profiles);

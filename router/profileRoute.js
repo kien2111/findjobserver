@@ -15,4 +15,5 @@ router.get('/getallpakageupgrade',controller.getListPakageUpgrade);
 router.get('/getlastestrequestupgrade',controller.getLastestProcessRequest);
 router.get('/fetchdetaiprofilewithid',controller.fetchDetaiProfileWithId);
 router.delete('/deletelastestupgraderequest',controller.deleteLastestUpgradeRequest);
+router.get('/getmapprofile',controller.getMapProfile);
 module.exports = router;
