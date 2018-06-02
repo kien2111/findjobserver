@@ -23,6 +23,12 @@ var TransactionModel = bookshelf.Model.extend({
     insertTransaction:Promise.method(function(obj,trx){
         return this.forge(obj).save(null,{method:"insert",transacting:trx});
     }),
+    successTransaction:Promise.method(function(idtransaction,trx){
+        return TransactionModel.forge({status:enumTransaction.SUCCESS})
+            .where({idtransaction:idtransaction})
+            .save(null,{method:'update',transacting:trx})
+            .tap(console.log);
+    }),
     fetchLastestRevenuePerMonth:Promise.method(function(){
         return bookshelf.knex.raw(`SELECT 
         SUM(IF(month = 'Jan', total, 0)) AS 'Jan',
@@ -70,7 +76,13 @@ var TransactionModel = bookshelf.Model.extend({
       order by YEAR(created_at) desc`);
     }),
     fetchRevenuePerDay:Promise.method(function(datestart,dateend){
-        return bookshelf.knex.raw(`select distinct dates,coalesce(total,0) from (
+        let newdatestart = new Date(datestart);
+        let newdateend = new Date(dateend);
+        let strdatestart = formatDate(newdatestart);
+        let strdateend = formatDate(newdateend);
+        console.log(strdatestart);
+        console.log(strdateend);
+        return bookshelf.knex.raw(`select distinct dates,coalesce(total,0) as total from (
             select date_format(selected_date,'%d/%m/%Y') as dates from 
             (select adddate('1970-01-01',t4*10000 + t3*1000 + t2*100 + t1*10 + t0) as selected_date from
              (select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
@@ -78,29 +90,41 @@ var TransactionModel = bookshelf.Model.extend({
              (select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
              (select 0 t3 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
              (select 0 t4 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
-            where selected_date between '${datestart.toLocaleString()}' and '${dateend.toLocaleString()}' 
+            where selected_date between '${strdatestart}' and '${strdateend}' 
             ) as days left join (SELECT DATE_FORMAT(created_at,'%d/%m/%Y') as date_created_transaction, SUM(amount_of_coin) as total
-                    FROM transactions where created_at between  '${datestart.toLocaleString()}' and '${dateend.toLocaleString()}'
+                    FROM transactions where created_at between  '${strdatestart}' and '${strdateend}'
                     GROUP BY DATE(created_at)) as d on dates = date_created_transaction order by STR_TO_DATE(dates,'%d/%m/%Y');`);
     }),
     fetchRevenuePerMonth:Promise.method(function(datestart,dateend){
-        return bookshelf.knex.raw(`select distinct monthyear,coalesce(total,0) from (
-            select date_format(selected_date,'%m/%Y') as monthyear from 
+        let newdatestart = new Date(datestart);
+        let newdateend = new Date(dateend);
+        let strdatestart = formatDate(newdatestart);
+        let strdateend = formatDate(newdateend);
+        console.log(strdatestart);
+        console.log(strdateend);
+        return bookshelf.knex.raw(`select distinct dates,coalesce(total,0) as total from (
+            select date_format(selected_date,'%m/%Y') as dates from 
             (select adddate('1970-01-01',t4*10000 + t3*1000 + t2*100 + t1*10 + t0) as selected_date from
              (select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
              (select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
              (select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
              (select 0 t3 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
              (select 0 t4 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
-            where selected_date between '${datestart.toLocaleString()}' and '${dateend.toLocaleString()}' 
+            where selected_date between '${strdatestart}' and '${strdateend}' 
             ) as days left join (SELECT DATE_FORMAT(created_at,'%m/%Y') as date_created_transaction, SUM(amount_of_coin) as total
-                    FROM transactions where created_at between  '${datestart.toLocaleString()}' and '${dateend.toLocaleString()}'
-                    GROUP BY YEAR(created_at),month(created_at)) as d on monthyear = date_created_transaction order by STR_TO_DATE(monthyear,'%m/%Y')
+                    FROM transactions where created_at between  '${strdatestart}' and '${strdateend}'
+                    GROUP BY YEAR(created_at),month(created_at)) as d on dates = date_created_transaction order by STR_TO_DATE(dates,'%m/%Y')
         `);
     }),
     fetchRevenuePerYear:Promise.method(function(datestart,dateend){
+        let newdatestart = new Date(datestart);
+        let newdateend = new Date(dateend);
+        let strdatestart = formatDate(newdatestart);
+        let strdateend = formatDate(newdateend);
+        console.log(strdatestart);
+        console.log(strdateend);
         return bookshelf.knex.raw(`
-        SELECT distinct selected_date,COALESCE(total,0) from (
+        SELECT distinct selected_date as dates,COALESCE(total,0) as total from (
             select * from 
             (select DATE_FORMAT(adddate('1970-01-01',t4*10000 + t3*1000 + t2*100 + t1*10 + t0),'%Y') selected_date from
              (select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
@@ -108,10 +132,10 @@ var TransactionModel = bookshelf.Model.extend({
              (select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
              (select 0 t3 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
              (select 0 t4 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
-            where selected_date between '2010-01-01 00:00:00.000' and '2018-05-22 15:37:31.535'
-            ) days left join (select DATE_FORMAT(created_at,'%Y') as month, SUM(amount_of_coin) as total
-            FROM transactions where created_at between  '2010-01-01 15:37:31.535' and '2018-05-22 15:37:31.535'
-            GROUP BY YEAR(created_at)) d on selected_date = month order by selected_date            
+            where selected_date between '${strdatestart}' and '${strdateend}'
+            ) days left join (select DATE_FORMAT(created_at,'%Y') as year, SUM(amount_of_coin) as total
+            FROM transactions where created_at between  '${strdatestart}' and '${strdateend}'
+            GROUP BY YEAR(created_at)) d on selected_date = year order by selected_date            
         `);
     }),
 });
@@ -120,3 +144,14 @@ var Transactions = bookshelf.Collection.extend({
 });
 module.exports.TransactionModel = bookshelf.model('TransactionModel',TransactionModel);
 module.exports.TransactionCollection = bookshelf.collection('TransactionCollection',Transactions);
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}

@@ -12,7 +12,6 @@ var Promise = require('bluebird');
 var bcrypt = Promise.promisifyAll(require('bcrypt'));
 var uuidv4 = require('uuid/v4');
 var Joi = require('joi');
-var Promise = require('bluebird');
 var jwt = require('jsonwebtoken');
 var {TransactionModel} = require('../model/transactionModel');
 var {AppointmentModel} = require('../model/appointmentModel');
@@ -201,8 +200,9 @@ var UserModel = bookshelf.Model.extend({
                     userdata.password = hashpassword;
                     return this.forge(userdata).save(null,{method:'insert',transacting:trx})
                     .tap(user=>{
-                        return Promise.all([new Account_RoleModel({iduser:user.get('iduser'),idrole:role.idrole})
-                        .save(null,{method:'insert',transacting:trx})]);
+                        return Promise.all([new Account_RoleModel({iduser:user.get('iduser'),idrole:role.idrole}).save(null,{method:'insert',transacting:trx})
+                            ,ProfileModel.forge({idprofile:user.get('iduser')}).save(null,{method:'insert',transacting:trx})
+                        ]);
                     });
                 })
            });
@@ -210,27 +210,24 @@ var UserModel = bookshelf.Model.extend({
     }),
     //update user
     updateadmin:Promise.method(function(obj){
-        let role = obj.role;
-        let userdata = _.omit(obj,['role']);
-        console.log(userdata);
+        let userdata = _.omit(obj,['idrole']);
         if(!obj) throw new Error("Pls provide data to signup");
         if(typeof obj !=='object')throw new Error("Param provide not an object");
         return bookshelf.transaction(trx=>{
-            return this.forge().where({iduser:userdata.iduser}).save(userdata,{method:'update',transacting:trx,patch:true})
+            return this.forge(userdata).where({iduser:userdata.iduser}).save(null,{method:'update',transacting:trx})
             .tap(user=>{
-                return new Account_RoleModel({idrole:role.idrole}).where({iduser:user.get('iduser')})
+                return new Account_RoleModel({idrole:obj.idrole}).where({iduser:user.get('iduser')})
                 .save(null,{method:'update',transacting:trx});
             });
         });
     }),
-
     //get list user block
     getAllBlockedUser:Promise.method(function({status}){
         return this.forge().query(function(db){
             db.innerJoin('accounts_roles','users.iduser','accounts_roles.iduser');
             db.where('status','=',status);
         }).fetchAll();
-    }),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+    }),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
     //block user
     blockuser:Promise.method(function(arr){
         if(!arr) throw new Error("Pls provide data to signup");

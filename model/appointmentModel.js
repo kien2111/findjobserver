@@ -74,6 +74,26 @@ var AppointmentModel = bookshelf.Model.extend({
             withRelated:['user_receive_appointment','deposit_fee']
         })
     }),
+    fetchAllAppointment:Promise.method(function(){
+        return this.forge().where({status:enumStatusAppointment.OnWaitAdminAccepted})
+                .fetchAll({withRelated:['user_create_appointment','user_receive_appointment']});
+    }),
+
+    acceptAppointmentAdmin:Promise.method(function({idappointment}){
+        if(!idappointment) throw new Error("Pls provide data to signup");
+        return bookshelf.transaction(trx=>{
+            return new AppointmentModel({status:enumStatusAppointment.Success})
+            .where({idappointment:idappointment})
+                .save(null,{method:"update",transacting:trx,patch:true});
+        })
+    }),
+    skipAppointment:Promise.method(function({idappointment}){
+        if(!idappointment) throw new Error("Pls provide data to signup");
+        return bookshelf.transaction(trx=>{
+            return new AppointmentModel({status:enumStatusAppointment.Fail}).where({idappointment:idappointment})
+                .save(null,{method:"update",transacting:trx,patch:true});
+        })
+    }),
     bookingAppointment:Promise.method(function(appointment){
         appointment.estimate_time = new Date(appointment.estimate_time);
         let self = this;
@@ -165,5 +185,4 @@ var Appointments = bookshelf.Collection.extend({
 });
 module.exports.AppointmentModel = bookshelf.model('AppointmentModel',AppointmentModel);
 module.exports.AppointmentCollection = bookshelf.collection('AppointmentCollection',Appointments);
-
 

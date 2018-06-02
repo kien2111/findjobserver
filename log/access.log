@@ -1,8 +1,0 @@
-::ffff:127.0.0.1 - - [01/Jun/2018:17:33:35 +0000] "GET /Profiles/getmapprofile?lat=10.794721620512625&long=106.69475119560957&level=0&distance=500.0&unit=0 HTTP/1.1" 200 1499 "-" "okhttp/3.9.1"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:33:50 +0000] "GET /Profiles/getmapprofile?lat=21.096455640331786&long=104.93569951504469&level=0&distance=500.0&unit=0 HTTP/1.1" 200 2259 "-" "okhttp/3.9.1"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Users/syncdata?iduser=5a44dd2b-10f7-4c20-afc0-d0667c2621d3 HTTP/1.1" 200 2676 "-" "okhttp/3.9.1"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Users/getdetailprofile?iduser=dfb507db-9e37-4707-9135-ed57a8c9ee6b HTTP/1.1" 200 698 "-" "okhttp/3.9.1"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Users/syncdata?iduser=5a44dd2b-10f7-4c20-afc0-d0667c2621d3 HTTP/1.1" 304 - "-" "okhttp/3.9.1"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Images/null HTTP/1.1" 404 - "-" "Dalvik/2.1.0 (Linux; U; Android 8.1.0; Android SDK built for x86 Build/OSM1.180201.007)"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Images/null HTTP/1.1" 404 - "-" "Dalvik/2.1.0 (Linux; U; Android 8.1.0; Android SDK built for x86 Build/OSM1.180201.007)"
-::ffff:127.0.0.1 - - [01/Jun/2018:17:34:03 +0000] "GET /Rates/getlistrate?iduser=dfb507db-9e37-4707-9135-ed57a8c9ee6b HTTP/1.1" 200 117 "-" "okhttp/3.9.1"

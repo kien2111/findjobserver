@@ -41,6 +41,39 @@ exports.fetchOnEmployerAppointment = function(req,res){
     });
 }
 
+exports.fetchAllWaitAppointment = function(req,res){
+    AppointmentModel.fetchAllAppointment()
+            .tap(console.log)
+            .then(result=>{
+                res.status(200).json({message:"fetch OK",data:result});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.acceptAppointmentAdmin = function(req,res){
+    AppointmentModel.acceptAppointmentAdmin(req.body)
+            .then(result=>{
+               // console.log("ok");
+                res.status(200).json({message:"update OK",data:result});
+            })
+            .catch(err=>{
+                //console.log("error");
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
+exports.skipAppointment = function(req,res){
+    AppointmentModel.skipAppointment(req.body)
+            .then(result=>{
+                res.status(200).json({message:"update OK",data:result});
+            })
+            .catch(err=>{
+                res.status(403).json({message:err.message,data:null});
+            })
+            .catch(console.log);
+}
 exports.getAvailableDepositFee = function(req,res){
     Deposit_FeeModel.getAvailableDepositFee()
             .tap(console.log)
@@ -83,5 +116,5 @@ exports.declineAppointment = function(req,res){
             .catch(err=>{
                 console.log("go here");
                 res.status(403).json({message:err.message,data:null});
-            });        
+            });
 }
